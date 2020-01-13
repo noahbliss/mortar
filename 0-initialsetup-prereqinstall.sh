@@ -10,9 +10,6 @@ chmod go-rwx -R "$PRIVATE_DIR"
 chmod go-rwx -R "$WORKING_DIR"
 cd "$WORKING_DIR"
 
-# Install the env file with a random key_uuid if it doesn't exist.
-if ! [ -f "$ENVFILE" ]; then KEY_UUID=$(uuidgen --random); sed -i -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; fi
-
 # Figure out our distribuition. 
 source /etc/os-release
 
@@ -21,7 +18,8 @@ if [ "$ID" == "debian" ]; then
 	apt-get update
 	apt-get install \
 		binutils \
-		efitools
+		efitools \
+		uuid-runtime
 
 	echo "Installed Debian dependencies."
 fi
@@ -29,8 +27,14 @@ fi
 # Arch
 if [ "$ID" == "arch" ]; then
 	pacman -Sy binutils \
-		efitools
+		efitools \
+		util-linux
 
 	echo "Installed Arch dependencies."
 fi
+
+if ! $(command -v uuidgen); then echo "Cannot find uuidgen tool."; exit 1; fi
+# Install the env file with a random key_uuid if it doesn't exist.
+if ! [ -f "$ENVFILE" ]; then KEY_UUID=$(uuidgen --random); sed -i -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; fi
+
 
