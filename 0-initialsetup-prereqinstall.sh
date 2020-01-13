@@ -34,7 +34,7 @@ if [ "$ID" == "arch" ]; then
 fi
 
 # Install the env file with a random key_uuid if it doesn't exist.
-if ! (command -v uuidgen); then echo "Cannot find uuidgen tool."; exit 1; fi
+if ! (command -v uuidgen >/dev/null); then echo "Cannot find uuidgen tool."; exit 1; fi
 if ! [ -f "$ENVFILE" ]; then echo "Generating new KEY_UUID and installing mortar.env to $WORKING_DIR"; KEY_UUID=$(uuidgen --random); sed -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; else echo "mortar.env already installed in $WORKING_DIR"; fi
 
 # Install cmdline.conf
