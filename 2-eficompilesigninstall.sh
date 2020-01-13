@@ -27,12 +27,12 @@ objcopy \
     --add-section .initrd="$INITRAMFSFILE" --change-section-vma .initrd=0x3000000 \
     "$EFISTUBFILE" "$UNSIGNEDEFIPATH"
 
-if [ -f "$UNSIGNEDEFIPATH" ]; then echo "Created "$UNSIGNEDEFIPATH"; else echo "Failed to create joined efi file at "$UNSIGNEDEFIPATH"; exit 1; fi
+if [ -f "$UNSIGNEDEFIPATH" ]; then echo "Created $UNSIGNEDEFIPATH"; else echo "Failed to create joined efi file at $UNSIGNEDEFIPATH"; exit 1; fi
 echo "Signing..."
 
 # Sign the new file. 
 sbsign --key "$SECUREBOOT_DB_KEY" --cert "$SECUREBOOT_DB_CRT" --output "$SIGNEDEFIPATH" "$UNSIGNEDEFIPATH"
 
-if [ -f "$SIGNEDEFIPATH" ]; then echo "Created signed "$SIGNEDEFIPATH"; else echo "Failed to create signed efi file at "$SIGNEDEFIPATH"; exit 1; fi
+if [ -f "$SIGNEDEFIPATH" ]; then echo "Created signed $SIGNEDEFIPATH"; else echo "Failed to create signed efi file at $SIGNEDEFIPATH"; exit 1; fi
 #echo "Removing unsigned efi file..."
 #if (rm "$UNSIGNEDEFIPATH"); then echo "Removed unsigned file."; else echo "Failed to remove unsigned file."; fi
