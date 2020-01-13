@@ -9,7 +9,7 @@ installed() {
 	echo "Installed $1."
 }
 
-chattr -i /sys/firmware/efi/efivars/{PK,KEK,db,dbx}-* >/dev/null
+chattr -i /sys/firmware/efi/efivars/{PK,KEK,db,dbx}-* 2>/dev/null
 if (efi-updatevar -f "$SECUREBOOT_DB_AUTH" db); then thing="db"; installed $thing; else failed $thing; exit 1; fi
 if (efi-updatevar -f "$SECUREBOOT_KEK_AUTH" KEK); then thing="KEK"; installed $thing; else failed $thing; exit 1; fi
 if (efi-updatevar -f "$SECUREBOOT_PK_AUTH" PK); then thing="PK"; installed $thing; else failed $thing; exit 1; fi
