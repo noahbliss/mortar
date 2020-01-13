@@ -35,6 +35,6 @@ fi
 
 if ! $(command -v uuidgen); then echo "Cannot find uuidgen tool."; exit 1; fi
 # Install the env file with a random key_uuid if it doesn't exist.
-if ! [ -f "$ENVFILE" ]; then KEY_UUID=$(uuidgen --random); sed -i -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; fi
+if ! [ -f "$ENVFILE" ]; then KEY_UUID=$(uuidgen --random); sed -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; fi
 
 
