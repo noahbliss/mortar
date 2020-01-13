@@ -8,7 +8,6 @@ mkdir -p "$PRIVATE_DIR"
 chown root:root -R "$PRIVATE_DIR"
 chmod go-rwx -R "$PRIVATE_DIR"
 chmod go-rwx -R "$WORKING_DIR"
-cd "$WORKING_DIR"
 
 # Figure out our distribuition. 
 source /etc/os-release
