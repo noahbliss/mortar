@@ -1,6 +1,7 @@
 # Debian
 
 ENVFILE="/etc/mortar/mortar.env" #Don't want to use $0 since we are using source against this file all over the place.
+CMDLINEFILE="/etc/mortar/cmdline.conf"
 WORKING_DIR='/etc/mortar/'
 PRIVATE_DIR="$WORKING_DIR/private/"
 if [ "$UID" -ne "0" ]; then echo "Must be run as root."; exit 1; fi
@@ -32,8 +33,9 @@ if [ "$ID" == "arch" ]; then
 	echo "Installed Arch dependencies."
 fi
 
-if ! $(command -v uuidgen); then echo "Cannot find uuidgen tool."; exit 1; fi
 # Install the env file with a random key_uuid if it doesn't exist.
-if ! [ -f "$ENVFILE" ]; then KEY_UUID=$(uuidgen --random); sed -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; else echo "mortar.env already installed in $WORKING_DIR"; fi
+if ! $(command -v uuidgen); then echo "Cannot find uuidgen tool."; exit 1; fi
+if ! [ -f "$ENVFILE" ]; then echo "Generating new KEY_UUID:"; KEY_UUID=$(uuidgen --random); sed -e "/KEY_UUID=/{s//KEY_UUID=$KEY_UUID/;:a" -e '$!N;$!ba' -e '}' mortar.env > "$ENVFILE"; else echo "mortar.env already installed in $WORKING_DIR"; fi
 
-
+# Install cmdline.conf
+if ! [ -f "$CMDLINEFILE" ]; then echo "No CMDLINE options file found. Using currently running cmdline options from /proc/cmdline"; cat /proc/cmdline > "$CMDLINEFILE"; else echo "cmdline.conf already installed in $WORKING_DIR"; fi
