@@ -2,8 +2,19 @@
 # We should sign and use our new EFI file before we require signatures. Better to be safe right?
 source /etc/mortar/mortar.env
 
-KERNELFILE="$1"
-INITRAMFSFILE="$2"
+if [ "$1" == "--interactive" ]; then
+	read -p "Enter full path to the kernel file (likely in /boot): " KERNELFILE
+	read -p "Enter full path to the initramfs/initrd img file (likely in /boot): " INITRAMFSFILE
+	read -p "Do you want to attempt automatic addition of the new efi file to the UEFI boot menu? (y/N): " installprompt
+	case "$installprompt" in
+	    [yY]*) INSTALLENTRY=true ;;
+	    *) INSTALLENTRY=false ;;
+	esac
+else
+	KERNELFILE="$1"
+	INITRAMFSFILE="$2"
+	if [ "$3" == "--install-entry" ]; then INSTALLENTRY=true; fi
+fi
 
 if [ -z $KERNELFILE ]; then KERNELFILE='/boot/vmlinuz-linux'; fi
 if [ -z $INITRAMFSFILE ]; then INITRAMFSFILE='/boot/initramfs-linux.img'; fi
@@ -17,8 +28,8 @@ testexist KERNELFILE "$KERNELFILE"
 testexist INITRAMFSFILE "$INITRAMFSFILE"
 testexist EFISTUBFILE "$EFISTUBFILE"
 testexist os-release /etc/os-release
-UNSIGNEDEFIPATH="$EFI_DIR$EFI_NAME.unsigned"
-SIGNEDEFIPATH="$EFI_DIR$EFI_NAME"
+UNSIGNEDEFIPATH="$TARGET_EFI.unsigned"
+SIGNEDEFIPATH="$TARGET_EFI"
 
 objcopy \
     --add-section .osrel=/etc/os-release --change-section-vma .osrel=0x20000 \
@@ -36,3 +47,9 @@ sbsign --key "$SECUREBOOT_DB_KEY" --cert "$SECUREBOOT_DB_CRT" --output "$SIGNEDE
 if [ -f "$SIGNEDEFIPATH" ]; then echo "Created signed $SIGNEDEFIPATH"; else echo "Failed to create signed efi file at $SIGNEDEFIPATH"; exit 1; fi
 #echo "Removing unsigned efi file..."
 #if (rm "$UNSIGNEDEFIPATH"); then echo "Removed unsigned file."; else echo "Failed to remove unsigned file."; fi
+
+if [ "$INSTALLENTRY" == "true" ]; then
+	mutliatedpath=$(echo \\$EFI_DIR$EFI_NAME | sed 's#/#\\#g')
+	echo "Attempting to install new efi file into UEFI boot menu..."
+	if (efibootmgr -c -l "$mutilatedpath" -L "$PRETTY_NAME"); then echo "Added boot entry."; else echo "Error adding boot entry."; fi
+fi
