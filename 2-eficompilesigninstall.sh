@@ -49,7 +49,7 @@ if [ -f "$SIGNEDEFIPATH" ]; then echo "Created signed $SIGNEDEFIPATH"; else echo
 #if (rm "$UNSIGNEDEFIPATH"); then echo "Removed unsigned file."; else echo "Failed to remove unsigned file."; fi
 
 if [ "$INSTALLENTRY" == "true" ]; then
-	mutliatedpath=$(echo \\$EFI_DIR$EFI_NAME | sed 's#/#\\#g')
+	mutilatedpath=$(printf "%s" '\'"$EFI_DIR" "$EFI_NAME" | sed 's/\//\\/g')
 	echo "Attempting to install new efi file into UEFI boot menu..."
 	if (efibootmgr -c -l "$mutilatedpath" -L "$PRETTY_NAME"); then echo "Added boot entry."; else echo "Error adding boot entry."; fi
 fi
