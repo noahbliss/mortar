@@ -49,7 +49,7 @@ if [ -f "$SIGNEDEFIPATH" ]; then echo "Created signed $SIGNEDEFIPATH"; else echo
 #if (rm "$UNSIGNEDEFIPATH"); then echo "Removed unsigned file."; else echo "Failed to remove unsigned file."; fi
 
 if [ "$INSTALLENTRY" == "true" ]; then
-	notailslash=$(echo "$EFI_DISK" | sed 's/\/$//')
+	notailslash=$(echo "$EFI_ROOT" | sed 's/\/$//')
 	EFI_DISK=$(mount | grep "$notailslash" | cut -f1 -d' ')
 	mutilatedpath=$(printf "%s" '\'"$EFI_DIR" "$EFI_NAME" | sed 's/\//\\/g')
 	echo "Attempting to install new efi file into UEFI boot menu..."
