@@ -39,3 +39,4 @@ if ! [ -f "$ENVFILE" ]; then echo "Generating new KEY_UUID and installing mortar
 
 # Install cmdline.conf
 if ! [ -f "$CMDLINEFILE" ]; then echo "No CMDLINE options file found. Using currently running cmdline options from /proc/cmdline"; cat /proc/cmdline > "$CMDLINEFILE"; else echo "cmdline.conf already installed in $WORKING_DIR"; fi
+echo "Make sure to update the installed mortar.env with your TPM version and ensure all the paths are correct."
