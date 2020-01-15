@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 # Noah Bliss
 # Some inspiration from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/tpm-script and https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/getsecret.sh
 
