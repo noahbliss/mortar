@@ -1,6 +1,6 @@
 #!/bin/bash
 # Noah Bliss
-# Initially based on a script I found in the arch forums. May add a link to original source if I can find it again.
+# Initially based on a script by Shawn Rose <shawnandrewrose@gmail.com> found here: https://bbs.archlinux.org/viewtopic.php?id=230948
 
 build() {
     add_module "tpm_crb"

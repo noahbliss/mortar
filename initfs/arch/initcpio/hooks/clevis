@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 # Noah Bliss
-# Initially inspired by a script I found in the arch forums somewhere. May add link to source later if I find it.
+# Initially based on a script by Shawn Rose <shawnandrewrose@gmail.com> found here: https://bbs.archlinux.org/viewtopic.php?id=230948
 
 
 run_hook ()
