@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 MORTAR_FILE="/etc/mortar/mortar.env"
 source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."

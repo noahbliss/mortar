@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Debian
 
 ENVFILE="/etc/mortar/mortar.env" #Don't want to use $0 since we are using source against this file all over the place.

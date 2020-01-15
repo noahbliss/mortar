@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source mortar.env
+source /etc/mortar/mortar.env
 
 failed() {
 	echo "Failed to install $1. Is your secureboot in the BIOS configured for audit mode?"
