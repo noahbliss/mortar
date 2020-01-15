@@ -9,7 +9,7 @@ luksmeta wipe -d "$CRYPTDEV" -s "$SLOT" #Wipe metadata from keyslot if present.
 echo "Wiping any old luks key in the keyslot. (You'll need to enter a password.)"
 cryptsetup luksKillSlot "$CRYPTDEV" "$SLOT"
 echo "Generating clevis key, adding it to the luks slot, and mapping it to the TPM PCRs."
-clevis-luks-bind -d "$CRYPTDEV" -s "$SLOT" tpm2 "{""pcr_bank":"sha256","pcr_ids":"$BINDPCR""}"
+clevis-luks-bind -d "$CRYPTDEV" -s "$SLOT" tpm2 '{""pcr_bank":"sha256","pcr_ids":"'"$BINDPCR"'"}'
 echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
