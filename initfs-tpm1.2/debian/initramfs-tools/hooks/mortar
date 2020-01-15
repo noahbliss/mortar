@@ -32,7 +32,11 @@ copy_exec /etc/tcsd.conf /etc
  
 # copy the necessary libraries 
 cp -fpL /lib/x86_64-linux-gnu/libns* ${DESTDIR}/lib/x86_64-linux-gnu/ 
- 
+
+# Add kernel modules
+manual_add_modules tpm
+manual_add_modules tpm_tis
+
 # copy the tpm configuration 
 mkdir -p "$DESTDIR/var/lib/tpm" 
 cp /var/lib/tpm/* "$DESTDIR/var/lib/tpm/" 
