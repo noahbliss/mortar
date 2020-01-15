@@ -28,7 +28,8 @@ fi
 if [ "$ID" == "arch" ]; then
 	pacman -Sy binutils \
 		efitools \
-		util-linux
+		util-linux \
+		sbsigntools
 
 	echo "Installed Arch dependencies."
 fi
