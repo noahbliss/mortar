@@ -2,6 +2,8 @@
 # Noah Bliss
 cp -r initramfs-tools /etc/
 source /etc/mortar/mortar.env
+
+# Install the initramfs script and update hook. 
 INITRAMFSSCRIPTFILE='/etc/initramfs-tools/scripts/local-top/mortar'
 
 sed -i -e "/^CRYPTDEV=.*/{s##CRYPTDEV=\"$CRYPTDEV\"#;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
@@ -11,3 +13,10 @@ sed -i -e "/^TPMINDEX=.*/{s//TPMINDEX=$TPMINDEX/;:a" -e '$!N;$!b' -e '}' "$INITR
 sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
 
 echo "Installed. You'll need to run \`update-initramfs -u\` then generate and sign the efi file."
+
+# Install the kernel upgrade hook to regenerate and sign the efi.
+cp 
+
+echo stuff
+
+
