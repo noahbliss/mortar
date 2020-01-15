@@ -39,7 +39,7 @@ objcopy \
     "$EFISTUBFILE" "$UNSIGNEDEFIPATH"
 
 if [ -f "$UNSIGNEDEFIPATH" ]; then echo "Created $UNSIGNEDEFIPATH"; else echo "Failed to create joined efi file at $UNSIGNEDEFIPATH"; exit 1; fi
-if [ -f "$SIGNEDEFIPATH"]; then echo "Found old signed file. Backing up to "$SIGNEDEFIPATH.old"; cp "$SIGNEDEFIPATH" "$SIGNEDEFIPATH.old"; fi
+if [ -f "$SIGNEDEFIPATH"]; then echo "Found old signed file. Backing up to $SIGNEDEFIPATH.old"; cp "$SIGNEDEFIPATH" "$SIGNEDEFIPATH.old"; fi
 echo "Signing..."
 
 # Sign the new file. 
