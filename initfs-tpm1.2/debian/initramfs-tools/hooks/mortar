@@ -40,12 +40,12 @@ copy_exec /usr/sbin/tpm_nvinfo /sbin/
 #create etc/passwd
 groupid=`id -G tss`
 userid=`id -u tss`
-#echo "root:x:0:0:root:/root:/bin/bash" >  ${DESTDIR}/etc/passwd
+echo "root:x:0:0:root:/root:/bin/bash" >  ${DESTDIR}/etc/passwd
 echo "tss:x:$userid:$groupid::/var/lib/tpm:/bin/false" >> ${DESTDIR}/etc/passwd
 
 #create etc/hosts
-#echo "127.0.0.1 localhost\n::1     localhost ip6-localhost ip6-loopback\nff02::1 ip6-allnodes\nff02::2 ip6-allrouters\n" > ${DESTDIR}/etc/hosts
+echo "127.0.0.1 localhost\n::1     localhost ip6-localhost ip6-loopback\nff02::1 ip6-allnodes\nff02::2 ip6-allrouters\n" > ${DESTDIR}/etc/hosts
 
 #create etc/group
-#echo "root:x:0:" > ${DESTDIR}/etc/group
+echo "root:x:0:" > ${DESTDIR}/etc/group
 echo "tss:x:$groupid:" >>  ${DESTDIR}/etc/group
