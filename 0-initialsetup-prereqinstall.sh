@@ -46,9 +46,11 @@ echo "Make sure to update the installed mortar.env with your TPM version and ens
 
 # TPM VERSION SPECIFIC PACKAGES.
 
-## Debian
+## TPM2 Debian
 # tpm2-tools clevis-tpm2 clevis-luks
 
-## Arch
+## TPM2 Arch
 # tpm2-tools clevis
 
+## TPM1.2 Debian
+# tpm-tools trousers
