@@ -23,7 +23,7 @@ if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); t
 	chmod 700 tmpramfs/mortar.key
 	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key 
 	echo "Sealing key to TPM..."
-	TPMINDEX=1
+	if [ -z "$TPMINDEX" ]; then echo "TPMINDEX not set."; exit 1; fi
 	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
 	read -s -r -p "Owner password: " OWNERPW
 	# Wipe index if it is populated.
@@ -48,5 +48,5 @@ echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
 HEADERSHA256=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
-sed -i -e "/HEADERSHA256=/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!ba' -e '}' "$MORTAR_FILE"
+sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$MORTAR_FILE"
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
