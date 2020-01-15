@@ -50,3 +50,26 @@ cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
 HEADERSHA256=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
 sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$MORTAR_FILE"
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
+
+# Figure out our distribuition.
+source /etc/os-release
+
+# Debian
+if [ "$ID" == "debian" ]; then
+INITRAMFSSCRIPTFILE='/etc/initramfs-tools/scripts/local-top/mortar'
+	if [ -f $INITRAMFSSCRIPTFILE ]; then
+		sed -i -e "/^CRYPTDEV=.*/{s##CRYPTDEV=\"$CRYPTDEV\"#;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
+		sed -i -e "/^CRYPTNAME=.*/{s//CRYPTNAME=$CRYPTNAME/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
+		sed -i -e "/^SLOT=.*/{s//SLOT=$SLOT/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
+		sed -i -e "/^TPMINDEX=.*/{s//TPMINDEX=$TPMINDEX/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
+		sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
+		echo "Updating initramfs..."
+		update-initramfs -u
+		echo "You still need to sign the efi!"
+	else
+		echo "Looks like the initramfs script isn't installed. Go do that then update the initramfs and generate/sign the efi."
+	fi
+elif [ "$ID" == "arch" ]; then
+	echo "Nothing set up for arch yet."
+fi
+
