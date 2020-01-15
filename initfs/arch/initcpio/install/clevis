@@ -1,0 +1,36 @@
+#!/bin/bash
+# Noah Bliss
+# Initially based on a script I found in the arch forums. May add a link to original source if I can find it again.
+
+build() {
+    add_module "tpm_crb"
+    add_binary "/usr/lib/libtss2-tcti-device.so"
+    add_module "tpm"
+    add_binary "tpm2_unseal"
+    add_binary "tpm2_load"
+    #add_binary "clevis-decrypt-http"
+    add_binary "clevis-decrypt-tang"
+    add_binary "clevis-decrypt-sss"
+    add_binary "clevis-decrypt"
+    add_binary "clevis-decrypt-tpm2"
+    add_binary "tpm2_createprimary"
+    add_binary "luksmeta"
+    add_binary "clevis"
+    add_binary "jose"
+    add_binary "curl"
+    add_binary "bash"
+    add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+This hook will attempt to unlock LUKS volumes using data stored in the header
+by clevis and luksmeta. Use this hook in combination with any early userspace
+networking hook, such as mkinitcpio-netconf or mkinitcpio-ppp. It also requires
+mkinitcpio-utils for the encryptssh hook.
+
+An example usage would be to have 'netconf clevis encryptssh' added before your
+filesystems hook. You also need to configure clevis unlocking by using the
+'clevis bind luks' command on your luks partition.
+HELPEOF
+}
