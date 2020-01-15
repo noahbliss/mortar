@@ -19,6 +19,9 @@ TPMINDEX=
 HEADERSHA256=
 HEADERFILE="./luksheaderbackup.raw"
 
+# Test if the disk is already unlocked.
+if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi
+
 sleep 2
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 if (cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"); then
@@ -42,6 +45,9 @@ fi
 
 # Get Mortar key.
 tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null
+# Disable future key fetches.
+tcsd && sleep 1
+tpm_nvread -i "$TPMINDEX" -s 0 >> /dev/null
 
 # Decrypt disk.
 if (cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key); then
