@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+ver="$1"
+kloc="$2"
+rdloc="/boot/initrd.img-$ver"
+
+if ! [ -e "$kloc" ]; then kloc="/boot/vmlinuz-$ver"; fi
+if ! [ -e "$kloc" ]; then echo "Can't find the new kernel."; exit 1; fi
+if ! [ -e "$rdloc" ]; then echo "Can't find the new initrd.img."; exit 2; fi
+
+/etc/mortar/eficompilesigninstall.sh "$kloc" "$rdloc"
