@@ -1,0 +1,56 @@
+#!/bin/bash 
+source /etc/mortar/mortar.env
+# Noah Bliss
+# Initially forked from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/tpm-hook on Jan 15, 2020
+INITRAMFSSCRIPTFILE='/etc/initramfs-tools/scripts/local-top/mortar'
+# Update CRYPTDEV CRYPTNAME SLOT TPMINDEX HEADERSHA256 in the initramfs script file.
+
+sed -i -e "/CRYPTDEV=/{s//CRYPTDEV=$CRYPTDEV/;:a" -e '$!N;$!ba' -e '}' "$INITRAMFSSCRIPTFILE"
+sed -i -e "/CRYPTNAME=/{s//CRYPTNAME=$CRYPTNAME/;:a" -e '$!N;$!ba' -e '}' "$INITRAMFSSCRIPTFILE"
+sed -i -e "/SLOT=/{s//SLOT=$SLOT/;:a" -e '$!N;$!ba' -e '}' "$INITRAMFSSCRIPTFILE"
+sed -i -e "/TPMINDEX=/{s//TPMINDEX=$TPMINDEX/;:a" -e '$!N;$!ba' -e '}' "$INITRAMFSSCRIPTFILE"
+sed -i -e "/HEADERSHA256=/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!ba' -e '}' "$INITRAMFSSCRIPTFILE"
+
+PREREQ=""  
+prereqs() 
+{ 
+  echo "$PREREQ" 
+} 
+case $1 in 
+  prereqs) 
+    prereqs 
+    exit 0 
+    ;; 
+esac 
+
+
+
+. /usr/share/initramfs-tools/hook-functions 
+ 
+# copy the daemon + config in the initrd 
+copy_exec /usr/sbin/tcsd /sbin 
+copy_exec /etc/tcsd.conf /etc 
+ 
+# copy the necessary libraries 
+cp -fpL /lib/x86_64-linux-gnu/libns* ${DESTDIR}/lib/x86_64-linux-gnu/ 
+ 
+# copy the tpm configuration 
+mkdir -p "$DESTDIR/var/lib/tpm" 
+cp /var/lib/tpm/* "$DESTDIR/var/lib/tpm/" 
+ 
+#copy the files to read the NVRAM and to read the secret  
+copy_exec /usr/sbin/tpm_nvread /sbin/ 
+copy_exec /usr/sbin/tpm_nvinfo /sbin/
+
+#create etc/passwd
+groupid=`id -G tss`
+userid=`id -u tss`
+#echo "root:x:0:0:root:/root:/bin/bash" >  ${DESTDIR}/etc/passwd
+echo "tss:x:$userid:$groupid::/var/lib/tpm:/bin/false" >> ${DESTDIR}/etc/passwd
+
+#create etc/hosts
+#echo "127.0.0.1 localhost\n::1     localhost ip6-localhost ip6-loopback\nff02::1 ip6-allnodes\nff02::2 ip6-allrouters\n" > ${DESTDIR}/etc/hosts
+
+#create etc/group
+#echo "root:x:0:" > ${DESTDIR}/etc/group
+echo "tss:x:$groupid:" >>  ${DESTDIR}/etc/group

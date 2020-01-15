@@ -1,0 +1,55 @@
+#!/usr/bin/bash
+# Noah Bliss
+# Some inspiration from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/tpm-script and https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/getsecret.sh
+
+
+# Get the TPM working.
+chown tss:tss /dev/tpm0
+chmod 600 /dev/tpm0
+ifconfig lo up
+# start tcsd 
+if [ -f /sbin/tcsd ]; then /sbin/tcsd; fi
+
+echo "Initializing... Please wait a few seconds for TPM validation of boot sequence."
+echo "Measuring boot system integrity..."
+CRYPTDEV= #LUKS Partition /dev/sda3
+CRYPTNAME= #Unlocked name (find in crypttab)
+SLOT=1 #Keyslot number in use by mortar.
+TPMINDEX=
+HEADERSHA256=
+HEADERFILE="./luksheaderbackup.raw"
+
+sleep 2
+if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
+if (cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"); then
+    HEADERSHA256CUR=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
+    if [ "$HEADERSHA256" == "$HEADERSHA256CUR" ]; then
+        echo "HEADER VALIDATION SUCCEEDED."
+    else
+        echo "HEADER VALIDATION FAILED."
+	echo "WAITING 10 SECONDS BEFORE CONTINUING."
+	echo "KILL SYSTEM NOW IF YOU DO NOT TRUST THIS HEADER."
+	sleep 7
+	echo "3..."
+	sleep 1
+	echo "2..."
+	sleep 1
+	echo "1..."
+	sleep 1
+    fi
+    sleep 2		
+fi
+
+# Get Mortar key.
+tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null
+
+# Decrypt disk.
+if (cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key); then
+    echo -e "VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
+    rm /tmp/mortar.key
+    if [ -f /tmp/mortar.key ]; then echo "FAILED TO REMOVE KEYFILE!"; fi
+    sleep 2
+else
+    echo "TPM VALIDATION FAILED."
+    sleep 3
+fi
