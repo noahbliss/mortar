@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Noah Bliss
+# Some inspiration taken from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/seal-nvram.sh
 MORTAR_FILE="/etc/mortar/mortar.env"
 source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."
@@ -19,7 +21,21 @@ if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); t
 	echo "Generating key..."
 	dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
 	chmod 700 tmpramfs/mortar.key
-	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" 
+	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key 
+	echo "Sealing key to TPM..."
+	TPMINDEX=1
+	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
+	read -s -r -p "Owner password: " OWNERPW
+	# Wipe index if it is populated.
+	if (tpm_nvinfo | grep \($TPMINDEX\) > /dev/null); then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
+	# Convert PCR format...
+	PCRS=$(echo "-r""$BINDPCR" | sed 's/,/ -r/g')
+	# Create new index sealed to PCRS. 
+	if (tpm_nvdefine -i "$TPMINDEX" -s $(wc -c tmpramfs/mortar.key) -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS); then
+		# Write key into the index...
+		tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
+	fi
+	# Get rid of the key in the ramdisk.
 	rm  tmpramfs/mortar.key
 	umount -l tmpramfs
 	rmdir tmpramfs
