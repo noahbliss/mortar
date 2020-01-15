@@ -21,7 +21,7 @@ HEADERFILE="./luksheaderbackup.raw"
 
 # Test if the disk is already unlocked.
 if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi
-
+if ! [ -e "$CRYPTDEV" ]; then echo "Cannot find the crypto block device at $CRYPTDEV"; exit 1; fi
 sleep 2
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 if cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"; then
