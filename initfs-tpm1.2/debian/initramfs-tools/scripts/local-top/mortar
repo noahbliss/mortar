@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Noah Bliss
 # Some inspiration from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/tpm-script and https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/getsecret.sh
 
@@ -24,8 +24,8 @@ if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi
 
 sleep 2
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
-if (cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"); then
-    HEADERSHA256CUR=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
+if cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"; then
+    HEADERSHA256CUR=`sha256sum "$HEADERFILE" | cut -f1 -d' '`
     if [ "$HEADERSHA256" == "$HEADERSHA256CUR" ]; then
         echo "HEADER VALIDATION SUCCEEDED."
     else
@@ -40,7 +40,7 @@ if (cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE");
 	echo "1..."
 	sleep 1
     fi
-    sleep 2		
+    sleep 2
 fi
 
 # Get Mortar key.
@@ -50,7 +50,7 @@ tcsd && sleep 1
 tpm_nvread -i "$TPMINDEX" -s 0 >> /dev/null
 
 # Decrypt disk.
-if (cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key); then
+if cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key; then
     echo -e "VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
     rm /tmp/mortar.key
     if [ -f /tmp/mortar.key ]; then echo "FAILED TO REMOVE KEYFILE!"; fi
