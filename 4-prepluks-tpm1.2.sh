@@ -17,7 +17,7 @@ esac
 
 if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
 	echo "Generating key..."
-	sudo dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
+	dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
 	chmod 700 tmpramfs/mortar.key
 	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" 
 	rm  tmpramfs/mortar.key
