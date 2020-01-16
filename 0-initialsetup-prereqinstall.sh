@@ -23,6 +23,10 @@ if [ "$ID" == "debian" ]; then
 		uuid-runtime
 
 	echo "Installed Debian dependencies."
+	echo "If you have a TPM 1.2 module you also need to run:"
+	echo "apt-get install tpm-tools trousers"
+	echo "If you have a TPM 2 module you also need to run:"
+	echo "apt-get install tpm2-tools clevis-tpm2 clevis-luks"
 fi
 
 # Arch
@@ -33,6 +37,10 @@ if [ "$ID" == "arch" ]; then
 		sbsigntools
 
 	echo "Installed Arch dependencies."
+        echo "If you have a TPM 1.2 module you also need to run:"
+        echo "Don't know the needed packages yet." #echo "pacman -Sy tpm-tools trousers"
+        echo "If you have a TPM 2 module you also need to run:"
+        echo "pacman -Sy tpm2-tools clevis"
 fi
 
 # Install the env file with a random key_uuid if it doesn't exist.
@@ -48,13 +56,8 @@ cp bin/mortar-compilesigninstall /usr/local/sbin/mortar-compilesigninstall
 if ! command -v mortar-compilesigninstall >/dev/null; then
 	echo "Installed mortar-compilesigninstall to /usr/local/sbin but couldn't find it in PATH. Please update your PATH to include /usr/local/sbin"
 fi
-# TPM VERSION SPECIFIC PACKAGES.
 
-## TPM2 Debian
-# tpm2-tools clevis-tpm2 clevis-luks
 
 ## TPM2 Arch
 # tpm2-tools clevis
 
-## TPM1.2 Debian
-# tpm-tools trousers
