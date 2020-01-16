@@ -2,6 +2,7 @@
 # Noah Bliss
 # Some inspiration taken from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/seal-nvram.sh
 MORTAR_FILE="/etc/mortar/mortar.env"
+OLD_DIR="$PWD"
 source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."
 od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*
@@ -53,23 +54,20 @@ if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 
 # Figure out our distribuition.
 source /etc/os-release
-
+initfsdir='initfs-tpm1.2/'
 # Debian
-if [ "$ID" == "debian" ]; then
-INITRAMFSSCRIPTFILE='/etc/initramfs-tools/scripts/local-top/mortar'
-	if [ -f $INITRAMFSSCRIPTFILE ]; then
-		sed -i -e "/^CRYPTDEV=.*/{s##CRYPTDEV=\"$CRYPTDEV\"#;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
-		sed -i -e "/^CRYPTNAME=.*/{s//CRYPTNAME=$CRYPTNAME/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
-		sed -i -e "/^SLOT=.*/{s//SLOT=$SLOT/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
-		sed -i -e "/^TPMINDEX=.*/{s//TPMINDEX=$TPMINDEX/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
-		sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
-		echo "Updating initramfs..."
-		update-initramfs -u
-		echo "You still need to sign the efi!"
-	else
-		echo "Looks like the initramfs script isn't installed. Go do that then update the initramfs and generate/sign the efi."
-	fi
+if [ "$ID" == "debian" ] && [ -d "$OLD_DIR""$initfsdir""$ID" ]; then
+	cd "$OLD_DIR""$initfsdir""$ID"'/'
+	echo "Distribution: $ID"
+	echo "Installing kernel update and initramfs build scripts with mortar.env values..."
+	bash install.sh # Start in new process so we don't get dropped to another directory. 
+	echo "Updating initramfs..."
+	update-initramfs -u
+	echo "You still need to generate and sign the efi!"
 elif [ "$ID" == "arch" ]; then
 	echo "Nothing set up for arch yet."
+else
+	echo "Distribution: $ID"
+	echo "Could not find scripts for your distribution."
 fi
 

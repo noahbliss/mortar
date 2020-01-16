@@ -16,10 +16,10 @@ echo "Initializing... Please wait a few seconds for TPM validation of boot seque
 echo "Measuring boot system integrity..."
 CRYPTDEV= #LUKS Partition /dev/sda3
 CRYPTNAME= #Unlocked name (find in crypttab)
-SLOT=1 #Keyslot number in use by mortar.
+SLOT= #Keyslot number in use by mortar.
 TPMINDEX=
 HEADERSHA256=
-HEADERFILE="./luksheaderbackup.raw"
+HEADERFILE=
 
 # Test if the disk is already unlocked.
 if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi

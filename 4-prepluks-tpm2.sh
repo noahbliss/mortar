@@ -51,5 +51,22 @@ if [ "$LUKSVER" == "1" ]; then
 	fi
 fi
 
-# REMOVE FROM THIS STEP:
-# sed -i "s/HEADERSHA256=.*/HEADERSHA256=$HEADERSHA256/" /etc/initcpio/hooks/clevis
+# Figure out our distribuition.
+source /etc/os-release
+initfsdir='initfs-tpm2/'
+# Debian
+if [ "$ID" == "debian" ] && [ -d "$OLD_DIR""$initfsdir""$ID" ]; then
+        cd "$OLD_DIR""$initfsdir""$ID"'/'
+        echo "Distribution: $ID"
+        echo "Installing kernel update and initramfs build scripts with mortar.env values..."
+        bash install.sh # Start in new process so we don't get dropped to another directory. 
+        echo "Updating initramfs..."
+        update-initramfs -u
+        echo "You still need to generate and sign the efi!"
+elif [ "$ID" == "arch" ]; then
+        echo "Nothing set up for arch yet."
+else
+        echo "Distribution: $ID"
+        echo "Could not find scripts for your distribution."
+fi
+
