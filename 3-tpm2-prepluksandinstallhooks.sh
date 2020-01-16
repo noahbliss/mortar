@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 MORTAR_FILE="/etc/mortar/mortar.env"
+OLD_DIR="$PWD"
 source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."
 od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*
@@ -34,7 +35,7 @@ echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
 HEADERSHA256=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
-sed -i -e "/HEADERSHA256=/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!ba' -e '}' "$MORTAR_FILE"
+sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$MORTAR_FILE"
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 # Get slot uuid and write to MORTAR_FILE. 
 if [ "$LUKSVER" == "1" ]; then
