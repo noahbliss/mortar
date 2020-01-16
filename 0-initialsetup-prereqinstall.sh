@@ -44,7 +44,7 @@ if ! [ -f "$CMDLINEFILE" ]; then echo "No CMDLINE options file found. Using curr
 echo "Make sure to update the installed mortar.env with your TPM version and ensure all the paths are correct."
 
 # Install the efi signing script.
-cp 2-eficompilesigninstall.sh /usr/local/sbin/mortar-compilesigninstall
+cp bin/mortar-compilesigninstall /usr/local/sbin/mortar-compilesigninstall
 if ! command -v mortar-compilesigninstall >/dev/null; then
 	echo "Installed mortar-compilesigninstall to /usr/local/sbin but couldn't find it in PATH. Please update your PATH to include /usr/local/sbin"
 fi
