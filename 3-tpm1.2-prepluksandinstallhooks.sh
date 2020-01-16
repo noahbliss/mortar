@@ -2,7 +2,7 @@
 # Noah Bliss
 # Some inspiration taken from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/seal-nvram.sh
 MORTAR_FILE="/etc/mortar/mortar.env"
-OLD_DIR="$PWD"
+OLD_DIR="$PWD/"
 source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."
 od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*

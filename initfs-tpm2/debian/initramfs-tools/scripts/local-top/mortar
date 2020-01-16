@@ -4,8 +4,6 @@
 # elements of this script inspired by https://github.com/latchset/clevis/blob/master/src/initramfs-tools/scripts/local-top/clevis.in as it existed on 1/14/2020
 
 
-. /scripts/functions
-
 # THIS BLOCK IS DISABLED FOR NOW. See if we need it...
 # This is a copy  of 'all_netbootable_devices/all_non_enslaved_devices' for
 # platforms that might not provide it.
@@ -71,12 +69,15 @@ HEADERSHA256=
 HEADERFILE=
 TOKENID=
 
+# Test if the disk is already unlocked.
+if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi
+if ! [ -e "$CRYPTDEV" ]; then echo "Cannot find the crypto block device at $CRYPTDEV"; exit 1; fi
 sleep 2
 
 # Verify the LUKS header.
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 if cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"; then
-    HEADERSHA256CUR=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
+    HEADERSHA256CUR=`sha256sum "$HEADERFILE" | cut -f1 -d' '`
     if [ "$HEADERSHA256" == "$HEADERSHA256CUR" ]; then
         echo "HEADER VALIDATION SUCCEEDED."
     else
@@ -108,7 +109,7 @@ fi
 # If LUKS2
 if cryptsetup isLuks --type luks2 "$CRYPTDEV"; then
 	# jose jwe fmt -c outputs extra \n, so clean it up and pass to disk for unlocking.
-	key=`cryptsetup token export --token-id "$TOKENID" | jose fmt -j- -Og jwe -o- | jose jwe fmt -i- -c | tr -d '\n'`
+	key=`cryptsetup token export --token-id "$TOKENID" "$CRYPTDEV" | jose fmt -j- -Og jwe -o- | jose jwe fmt -i- -c | tr -d '\n'`
 	if echo -n "$key" | clevis decrypt | cryptsetup luksOpen "$CRYPTDEV" "$CRYPTNAME"; then
 		RESULT="pass"
 	else

@@ -35,7 +35,7 @@ prereqs)
      ;;
 esac
 
-. @initramfstoolsdir@/hook-functions
+. /usr/share/initramfs-tools/hook-functions
 
 die() {
     code="$1"
@@ -60,18 +60,18 @@ if [ -n "${FORCE_CLEVIS}" ] && [ "${FORCE_CLEVIS}" != "n" ]; then
 fi    
 
 
-copy_exec @bindir@/clevis-decrypt-tang || die 1 "@bindir@/clevis-decrypt-tang not found"
-copy_exec @bindir@/clevis-decrypt-sss || die 1 "@bindir@/clevis-decrypt-sss not found"
-copy_exec @bindir@/clevis-decrypt || die 1 "@bindir@/clevis-decrypt not found"
-if [ -x @bindir@/clevis-decrypt-tpm2 ]; then
-    copy_exec @bindir@/clevis-decrypt-tpm2 || die 1 "@bindir@/clevis-decrypt-tpm2 not found"
+copy_exec /usr/bin/clevis-decrypt-tang || die 1 "/usr/bin/clevis-decrypt-tang not found"
+copy_exec /usr/bin/clevis-decrypt-sss || die 1 "/usr/bin/clevis-decrypt-sss not found"
+copy_exec /usr/bin/clevis-decrypt || die 1 "/usr/bin/clevis-decrypt not found"
+if [ -x /usr/bin/clevis-decrypt-tpm2 ]; then
+    copy_exec /usr/bin/clevis-decrypt-tpm2 || die 1 "/usr/bin/clevis-decrypt-tpm2 not found"
     tpm2_creatprimary_bin=$(find_binary "tpm2_createprimary")
     tpm2_unseal_bin=$(find_binary "tpm2_unseal")
     tpm2_load_bin=$(find_binary "tpm2_load")
     copy_exec "${tpm2_creatprimary_bin}" || die 1 "Unable to copy ${tpm2_creatprimary_bin}" 
     copy_exec "${tpm2_unseal_bin}" || die 1 "Unable to copy ${tpm2_unseal_bin}"
     copy_exec "${tpm2_load_bin}" || die 1 "Unable to copy ${tpm2_load_bin}"
-    for _LIBRARY in @libdir@/libtss2-tcti-device.so*; do
+    for _LIBRARY in /usr/lib/x86_64-linux-gnu/libtss2-tcti-device.so*; do
         if [ -e "${_LIBRARY}" ]; then
             copy_exec "${_LIBRARY}" || die 2 "Unable to copy ${_LIBRARY}"
         fi
@@ -85,4 +85,4 @@ copy_exec "${luksmeta_bin}" || die 2 "Unable to copy ${luksmeta_bin}"
 copy_exec "${jose_bin}" || die 2 "Unable to copy ${jose_bin}"
 
 
-copy_exec @bindir@/clevis || die 1 "@bindir@/clevis not found"
+copy_exec /usr/bin/clevis || die 1 "/usr/bin/clevis not found"
