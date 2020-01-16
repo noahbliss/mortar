@@ -60,6 +60,8 @@ eth_check() {
 #PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin"
 #END DISABLED
 
+mkdir -p /run/cryptsetup
+echo "Initializing... Please wait a few seconds for TPM validation of boot sequence."
 echo "Measuring boot system integrity..."
 CRYPTDEV= #LUKS Partition /dev/sda3
 CRYPTNAME= #Unlocked name (find in crypttab)
