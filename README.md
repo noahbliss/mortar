@@ -11,6 +11,9 @@ Mortar aims to support both TPM 1.2 and 2 as well as LUKS1 and LUKS2 by intellig
 Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
 
 ## How it works.  
+
+![mortar overview](docs/mortar-overview.png)  
+
 Only 2 partitions on your primary disk are used: your UEFI ESP, and your encrypted LUKS partition. (You can leave your unencrypted boot partition if you like, but I'd highly recommend removing or disabling its automatic mount so that kernels and initram filesystems can reside encrypted on your LUKS partition.)  
 
 You generate your own Secureboot keys. Only efi files you sign will successfully boot without resetting the BIOS.  
