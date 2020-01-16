@@ -1,12 +1,17 @@
 # Mortar  
 Framework to join Linux's physical security bricks. 
 
+UNDER HEAVY DEVELOPMENT.  
+Debian - LUKS2(and luks1 assumed) + TPM1.2 working.
+
+
 ## What is it?  
 Mortar is an attempt to take the headache and fragmented processes out of joining Secureboot, TPM keys, and LUKS.  
 
-Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed. Disks are automatically unlocked once the boot sequence has been validated, making this dramatically more convenient for end-users, and making LUKS on servers a viable option (as they can automatically unlock on reboot).  
+Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed. The TPM is used to effectively whitelist certain boot states. Disks are automatically unlocked once the boot sequence has been validated. This makes full-disk encryption dramatically more convenient for end-users and viable on servers (as they can automatically unlock on reboot).  
+Mortar aims to support both TPM 1.2 (via its own implementation) and TPM 2 (via clevis).
 
-Mortar aims to support both TPM 1.2 and 2 as well as LUKS1 and LUKS2 by intelligently selecting different implementation paths based on your current setup.  
+LUKS1 and LUKS2 are both supported by intelligently selecting different implementation paths based on your current setup.  
 
 Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
 
