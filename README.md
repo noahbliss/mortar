@@ -2,7 +2,7 @@
 Framework to join Linux's physical security bricks. 
 
 UNDER HEAVY DEVELOPMENT.  
-Debian - LUKS2(and luks1 assumed) + TPM1.2 working.
+Debian - LUKS2(and luks1 assumed) + TPM1.2 working.  
 Debian - LUKS2 + TPM2 working.
 
 ## What is it?  
