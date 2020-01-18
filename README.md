@@ -69,4 +69,51 @@ This spits out PEM formatted keys. If the script to install them fails, you may 
     ./1-generatesecurebootkeys.sh  
 Keys are written to /etc/mortar/private with sane permissions. The next command that sources mortar.env will further restrict these permissions.  
 
-(more to come)
+## Generate your first signed EFI file.  
+Now it is time to merge your kernel, initramfs, and kernel command line options into a single EFI file and sign that file with your secureboot keys. 
+
+This script has several options.  
+
+The following command will generate the Mortar signed efi using a kernel and initramfs and use efibootmgr to attempt to install a boot entry for the resulting file:  
+
+    mortar-compilesigninstall /path/to/vmlinuz-kernel-image /path/to/initramfs.img --install-entry  
+
+You can also run it without the `--install-entry` to just generate the file.  
+
+You can also run it interactively:  
+
+    mortar-compilesigninstall --interactive  
+
+## Reboot and ensure that the new EFI file boots correctly.  
+Exactly what it says. If you opted against/efibootmgr failed to automatically install the boot entry, you should now add the EFI to your BIOS's boot list.  
+
+## (more to come)
+High level of the rest of the steps:  
+
+ - Measure TPM PCR values and store for later comparison.  
+ - Install secureboot keys and enable secureboot. Put a password on the BIOS.  
+ - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this).  
+ - Boot the system with secureboot on (and pray).  
+ - Measure PCR values now that secureboot is set up.  
+ (optional):  
+  - Regenerate the signed EFI. This will move the first one to .old.  
+  - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
+ - Run the luks script for the TPM version being used.  
+ - Update initramfs.  
+ - Regenerate EFI.  
+ - Reboot and pray.  
+ - If it all works, then you just booted to a login prompt with the disk being automatically decrypted.  
+
+## Remove boot partition risk.
+`mkdir /boot2`  
+If EFI partition is inside /boot unmount it.  
+Copy /boot to /boot2  
+`cp -r /boot /boot2`  
+unmount /boot  
+`mv /boot2 /boot`  
+Remove /boot from /etc/fstab  
+remount your EFI partition if it was inside /boot  
+Optionally regenerate your EFI just to make sure it can still find your kernel and initramfs.  
+
+## TODO:  
+Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
