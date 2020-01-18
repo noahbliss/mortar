@@ -15,7 +15,7 @@ LUKS1 and LUKS2 are both supported by intelligently selecting different implemen
 
 Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
 
-Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to decrypt the drive. Protect the root account. With TPM1.2 Mortar does some hacks to make this more difficult (thanks morbitzer).
+Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to decrypt the drive. Protect the root account. With TPM1.2 Mortar leverages READ_STCLEAR to make this more difficult (thanks morbitzer).
 
 ## How it works.  
 
