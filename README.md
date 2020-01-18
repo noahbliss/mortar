@@ -1,5 +1,5 @@
 # Mortar  
-Framework to join Linux's physical security bricks. 
+Framework to join Linux's physical security bricks. Mortar is essentially Linux-native TPM-backed Bitlocker.  
 
 UNDER HEAVY DEVELOPMENT.  
 Debian - LUKS2(and luks1 assumed) + TPM1.2 working.  
