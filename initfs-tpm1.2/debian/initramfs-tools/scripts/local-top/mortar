@@ -53,7 +53,7 @@ tpm_nvread -i "$TPMINDEX" -s 0 >> /dev/null
 
 # Decrypt disk.
 if cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key; then
-    echo -e "VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
+    echo -e "TPM VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
     rm /tmp/mortar.key
     if [ -f /tmp/mortar.key ]; then echo "FAILED TO REMOVE KEYFILE!"; fi
     sleep 2
