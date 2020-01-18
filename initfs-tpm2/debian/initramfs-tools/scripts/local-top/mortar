@@ -121,7 +121,7 @@ fi
 
 # Display Result
 if [ "$RESULT" == "pass" ]; then
-    echo -e "VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
+    echo -e "TPM VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
     sleep 2
 else
     echo "TPM VALIDATION FAILED."
