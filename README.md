@@ -66,7 +66,7 @@ At this point you should have your /etc/mortar/mortar.env file generated and ins
 ## Generate your secureboot keys.  
 This spits out PEM formatted keys. If the script to install them fails, you may need to manually install them in your BIOS. Most BIOSes take DER format. You can convert them with the openssl command.  
 
-    1-generatesecurebootkeys.sh  
+    ./1-generatesecurebootkeys.sh  
 Keys are written to /etc/mortar/private with sane permissions. The next command that sources mortar.env will further restrict these permissions.  
 
 (more to come)
