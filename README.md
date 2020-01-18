@@ -47,16 +47,18 @@ As I mentioned earlier, we should **not** be using an unencrypted /boot when we'
 For your reference, this defaulted to xts-aes512. I'd recommend either using xts-aes512 (security-leaning sweet spot) or xts-aes256 (performance-leaning sweet spot) but that's up to you.  
 
 You can test your expected performance of each with:  
-`cryptsetup benchmark`  
+    cryptsetup benchmark  
 
 ## Install the prerequisite software.
 Do this as root in a directory only root can access. (I typically use /root/git at this stage.)  
 
 Install git and git clone this project.  
-`apt-get update && apt-get install git`  
-`git clone https://github.com/noahbliss/mortar`  
-`cd mortar`  
-`./0-initialsetup-prereqinstall.sh`  
+
+    apt-get update && apt-get install git
+    git clone https://github.com/noahbliss/mortar
+    cd mortar
+    ./0-initialsetup-prereqinstall.sh  
+
 DON'T FORGET TO INSTALL THE TPM-VERSION-SPECIFIC PACKAGES THAT ARE ECHOED AT THE END.  
 At this point you should have your /etc/mortar/mortar.env file generated and installed. Change any values that you'd like.  
 /usr/local/sbin/mortar-compilesigninstall should also be installed.  
@@ -64,7 +66,7 @@ At this point you should have your /etc/mortar/mortar.env file generated and ins
 ## Generate your secureboot keys.  
 This spits out PEM formatted keys. If the script to install them fails, you may need to manually install them in your BIOS. Most BIOSes take DER format. You can convert them with the openssl command.  
 
-`1-generatesecurebootkeys.sh`  
-Keys are written to /etc/mortar/private  
+    1-generatesecurebootkeys.sh  
+Keys are written to /etc/mortar/private with sane permissions. The next command that sources mortar.env will further restrict these permissions.  
 
 (more to come)
