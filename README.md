@@ -95,9 +95,9 @@ High level of the rest of the steps:
  - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this).  
  - Boot the system with secureboot on (and pray).  
  - Measure PCR values now that secureboot is set up.  
- (optional):  
-  - Regenerate the signed EFI. This will move the first one to .old.  
-  - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
+ - optional steps:  
+    - Regenerate the signed EFI. This will move the first one to .old.  
+    - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
  - Run the luks script for the TPM version being used.  
  - Update initramfs.  
  - Regenerate EFI.  
