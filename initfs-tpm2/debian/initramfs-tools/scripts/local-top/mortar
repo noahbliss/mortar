@@ -3,63 +3,6 @@
 # Modified for github.com/noahbliss/mortar
 # elements of this script inspired by https://github.com/latchset/clevis/blob/master/src/initramfs-tools/scripts/local-top/clevis.in as it existed on 1/14/2020
 
-
-# THIS BLOCK IS DISABLED FOR NOW. See if we need it...
-# This is a copy  of 'all_netbootable_devices/all_non_enslaved_devices' for
-# platforms that might not provide it.
-clevis_all_netbootable_devices() {
-    for device in /sys/class/net/* ; do
-            if [ ! -e "$device/flags" ]; then
-                    continue
-            fi
-
-            loop=$(($(cat "$device/flags") & 0x8 && 1 || 0))
-            bc=$(($(cat "$device/flags") & 0x2 && 1 || 0))
-            ptp=$(($(cat "$device/flags") & 0x10 && 1 || 0))
-
-            # Skip any device that is a loopback
-            if [ $loop = 1 ]; then
-                    continue
-            fi
-
-            # Skip any device that isn't a broadcast
-            # or point-to-point.
-            if [ $bc = 0 ] && [ $ptp = 0 ]; then
-                    continue
-            fi
-
-            # Skip any enslaved device (has "master" link
-            # attribute on it)
-            device=$(basename "$device")
-            ip -o link show "$device" | grep -q -w master && continue
-            DEVICE="$DEVICE $device"
-    done
-    echo "$DEVICE"
-}
-
-# Check if network is up before trying to configure it.
-eth_check() {
-    for device in $(clevis_all_netbootable_devices); do
-        ip link set dev "$device" up
-        sleep 1
-        ETH_HAS_CARRIER=$(cat /sys/class/net/"$device"/carrier)
-        if [ "$ETH_HAS_CARRIER" = '1' ]; then
-            return 0
-        fi
-    done
-    return 1
-}
-#START DISABLED
-#if eth_check; then
-    # Make sure networking is set up: if booting via nfs, it already is
-    # Doesn't seem to work when added to clevisloop for some reason
-#    [ "$boot" = nfs ] || configure_networking
-#fi
-
-# Set the path how we want it (Probably not all needed)
-#PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin"
-#END DISABLED
-
 mkdir -p /run/cryptsetup
 echo "Initializing... Please wait a few seconds for TPM validation of boot sequence."
 echo "Measuring boot system integrity..."
