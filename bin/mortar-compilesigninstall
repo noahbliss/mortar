@@ -16,6 +16,8 @@ else
 	if [ "$3" == "--install-entry" ]; then INSTALLENTRY=true; fi
 fi
 
+# Add logic here for sourcing /etc/mortar/kernel.env
+# if [ -f /etc/mortar/kernel.env ]; then source /etc/mortar/kernel.env; fi
 if [ -z $KERNELFILE ]; then KERNELFILE='/boot/vmlinuz-linux'; fi
 if [ -z $INITRAMFSFILE ]; then INITRAMFSFILE='/boot/initramfs-linux.img'; fi
 
@@ -56,3 +58,9 @@ if [ "$INSTALLENTRY" == "true" ]; then
 	echo "Attempting to install new efi file into UEFI boot menu..."
 	if (efibootmgr -c -d "$EFI_DISK" -l "$mutilatedpath" -L "$PRETTY_NAME"); then echo "Added boot entry."; else echo "Error adding boot entry."; fi
 fi
+
+# Update or create kernel.env
+cat << EOF > /etc/mortar/kernel.env
+KERNELFILE="$KERNELFILE"
+INITRAMFSFILE="$INITRAMFSFILE"
+EOF
