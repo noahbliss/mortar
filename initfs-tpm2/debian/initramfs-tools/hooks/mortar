@@ -61,6 +61,8 @@ fi
 
 manual_add_modules tpm
 manual_add_modules tpm_crb
+manual_add_modules tpm_tis
+manual_add_modules tpm_tis_core
 
 copy_exec /usr/bin/clevis /bin || die 1 "/usr/bin/clevis not found"
 copy_exec /usr/bin/clevis-decrypt-tang /bin || die 1 "/usr/bin/clevis-decrypt-tang not found"
