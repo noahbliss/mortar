@@ -9,13 +9,14 @@ Debian - LUKS2 + TPM2 working.
 Mortar is an attempt to take the headache and fragmented processes out of joining Secureboot, TPM keys, and LUKS.  
 
 Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed. The TPM is used to effectively whitelist certain boot states. Disks are automatically unlocked once the boot sequence has been validated. This makes full-disk encryption dramatically more convenient for end-users and viable on servers (as they can automatically unlock on reboot).  
+
 Mortar aims to support both TPM 1.2 (via its own implementation) and TPM 2 (via clevis).
 
-LUKS1 and LUKS2 are both supported by intelligently selecting different implementation paths based on your current setup.  
+LUKS1 and LUKS2 are both supported.  
 
 Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
 
-Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to decrypt the drive. Protect the root account. With TPM1.2 Mortar leverages READ_STCLEAR to make this more difficult (thanks morbitzer).
+Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to decrypt the drive. Protect the root account. With TPM1.2 Mortar leverages READ_STCLEAR to make this more difficult (thanks morbitzer). I'm investigating a way to make tpm2 work *without* clevis down the road.  
 
 ## How it works.  
 
@@ -107,12 +108,14 @@ High level of the rest of the steps:
 ## Remove boot partition risk.
 `mkdir /boot2`  
 If EFI partition is inside /boot unmount it.  
-Copy /boot to /boot2  
-`cp -r /boot /boot2`  
+`umount -l /boot/efi`  
+Copy /boot contents to /boot2  
+`cp -r /boot/* /boot2`  
 unmount /boot  
 `mv /boot2 /boot`  
-Remove /boot from /etc/fstab  
+**Remove /boot from /etc/fstab**  
 remount your EFI partition if it was inside /boot  
+`mount -a`  
 Optionally regenerate your EFI just to make sure it can still find your kernel and initramfs.  
 
 ## TODO:  
