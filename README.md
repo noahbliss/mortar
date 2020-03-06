@@ -99,6 +99,7 @@ High level of the rest of the steps:
  - optional steps:  
     - Regenerate the signed EFI. This will move the first one to .old.  
     - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
+ - Set a BIOS password.  
  - Run the luks script for the TPM version being used.  
  - Update initramfs.  
  - Regenerate EFI.  
