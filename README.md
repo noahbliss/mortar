@@ -121,3 +121,5 @@ Optionally regenerate your EFI just to make sure it can still find your kernel a
 
 ## TODO:  
 Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
+
+Investigate feasibility of storing the entire luks header in the nvram of the TPM module.  
