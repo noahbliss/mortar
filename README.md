@@ -4,7 +4,7 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 UNDER HEAVY DEVELOPMENT.  
 Debian - LUKS2(and luks1 assumed) + TPM1.2 working.  
 Debian - LUKS2 + TPM2 working.  
-Centos - [In testing.](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)
+Centos - [Nearly done!](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)
 
 ## What is it?  
 Mortar is an attempt to take the headache and fragmented processes out of joining Secureboot, TPM keys, and LUKS.  
