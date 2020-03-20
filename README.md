@@ -93,10 +93,16 @@ Exactly what it says. If you opted against/efibootmgr failed to automatically in
 High level of the rest of the steps:  
 
  - Measure TPM PCR values and store for later comparison.  
- - Install secureboot keys and enable secureboot. Put a password on the BIOS.  
+   - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
+ - Install secureboot keys and enable secureboot.  
+
+Reboot into the BIOS:  
+ - Put a password on the BIOS.  
  - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this).  
  - Boot the system with secureboot on (and pray).  
- - Measure PCR values now that secureboot is set up.  
+
+
+ - Measure PCR values now that secureboot is set up. (PCR7 may be the same depending on if you enrolled additional hashes or not, PCR1 should have changed since BIOS settings were modified.)  
  - optional steps:  
     - Regenerate the signed EFI. This will move the first one to .old.  
     - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
