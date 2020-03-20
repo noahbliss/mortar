@@ -14,6 +14,8 @@ vda3 - luks
 `./0-`  
 **Add packages I need to add to ./0 here!**  
 `dnf install binutils`  
+TPM2  
+`dnf install tpm2-tools clevis-luks clevis-dracut`  
 Packages that would have gotten automatically added on Debian, but we need to fetch manually here:  
 `dnf install mtools`  
 CENTOS MIRRORS ARE MISSING PACKAGES WE NEED.  
@@ -25,7 +27,23 @@ http://download.opensuse.org/repositories/home:/jejb1:/UEFI/Fedora_27/x86_64/
 `./1- (works)` (efi keys have been generated/converted/placed in /etc/mortar/private)  
 `mortar-compilesigninstall /boot/vmlinuz-{kernelversion} /boot/initramfs-{kernelversion}.img` (looks like centos and debian use a similar directory structure)  
 
-So far this gets us a merged, signed, and bootable efi file. We haven't installed secureboot keys yet and haven't touched TPM.  
+We now have a merged, signed, and bootable efi file.  
+
+Reboot and ensure the efi file works.  
+
+Install secureboot keys with ./2  
+
+Reboot and make sure it still works.  
+
+Lock down the BIOS.  
+
+Once things are as they should be secureboot wise, run ./3 and seal a new LUKS key to the PCRs.  
+
+Reboot and pray.  
+
+Clevis Dracut seems to work just fine from here, give the system a few seconds and it will skip the luks unlock screen and go right to the standard user login prompt.  
 
 
-Ongoing.  
+We now have a system that auto unlocks. We still need to at least get some kernel upgrade hooks so that the signed efi file is updated when the kernel gets an upgrade.  
+
+Ongoing but almost there!  
