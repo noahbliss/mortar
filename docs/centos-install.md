@@ -22,7 +22,7 @@ Get sbsigntools (0.9.3-1.1 worked) and efitools (1.9.2-2.2 worked) from:
 http://download.opensuse.org/repositories/home:/jejb1:/UEFI/Fedora_27/x86_64/  
 `rpm -i sbsigntools.rpm`  
 `rpm -i efitools.rpm`  
-`./1- (works)` (efi keys have been generated/converted/placed in /etc/mortar/private  
+`./1- (works)` (efi keys have been generated/converted/placed in /etc/mortar/private)  
 `mortar-compilesigninstall /boot/vmlinuz-{kernelversion} /boot/initramfs-{kernelversion}.img` (looks like centos and debian use a similar directory structure)  
 
 So far this gets us a merged, signed, and bootable efi file. We haven't installed secureboot keys yet and haven't touched TPM.  
