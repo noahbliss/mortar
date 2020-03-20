@@ -46,4 +46,6 @@ Clevis Dracut seems to work just fine from here, give the system a few seconds a
 
 We now have a system that auto unlocks. We still need to at least get some kernel upgrade hooks so that the signed efi file is updated when the kernel gets an upgrade.  
 
+Unencrypted boot partition contents confirmed no longer needed at this stage. Take actions included in the main README to reduce risk.  
+
 Ongoing but almost there!  
