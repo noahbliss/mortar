@@ -9,7 +9,7 @@ Centos - [Nearly done!](https://github.com/noahbliss/mortar/blob/master/docs/cen
 ## What is it?  
 Mortar is an attempt to take the headache and fragmented processes out of joining Secureboot, TPM keys, and LUKS.  
 
-Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed. The TPM is used to effectively whitelist certain boot states. Disks are automatically unlocked once the boot sequence has been validated. This makes full-disk encryption dramatically more convenient for end-users and viable on servers (as they can automatically unlock on reboot).  
+**Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed.** The TPM is used to effectively whitelist certain boot states. Disks are automatically unlocked once the boot sequence has been validated. This makes full-disk encryption dramatically more convenient for end-users and viable on servers (as they can automatically unlock on reboot).  
 
 Mortar aims to support both TPM 1.2 (via its own implementation) and TPM 2 (via clevis).
 
