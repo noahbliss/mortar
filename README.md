@@ -1,10 +1,16 @@
 # Mortar  
 Framework to join Linux's physical security bricks. Mortar is essentially Linux-native TPM-backed Bitlocker.  
 
-UNDER HEAVY DEVELOPMENT.  
-Debian - LUKS2(and luks1 assumed) + TPM1.2 working.  
-Debian - LUKS2 + TPM2 working.  
-Centos - [Nearly done!](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)
+|          | LUKS1 | LUKS2 | TPM1.2 | TPM2 |
+|----------|-------|-------|--------|------|
+| Debian   | *     | X     | X      | X    |
+| [CentOS](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)   |       |       |        | !    |
+| Arch     |       |       |        |      |
+| OpenSUSE |       |       |        |      |
+| Fedora   |       |       |        |      |  
+
+*=insufficiently tested, but presumed working  
+!=in progress
 
 ## What is it?  
 Mortar is an attempt to take the headache and fragmented processes out of joining Secureboot, TPM keys, and LUKS.  
