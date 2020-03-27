@@ -69,11 +69,12 @@ elif [ "$ID" == "arch" ]; then
 elif [ "$ID" == "centos" ] && [ -d "$OLD_DIR""$initfsdir""$ID" ]; then
         cd "$OLD_DIR""$initfsdir""$ID"'/'
         echo "Distribution: $ID"
-        echo "Installing kernel update and initramfs build scripts with mortar.env values..."
-        bash install.sh # Start in new process so we don't get dropped to another directory. 
-        echo "Updating initramfs..."
-        dracut -f
-        echo "You still need to generate and sign the efi!"
+	echo "Centos scripts and hooks are not yet ready for use."
+        #echo "Installing kernel update and initramfs build scripts with mortar.env values..."
+        #bash install.sh # Start in new process so we don't get dropped to another directory. 
+        #echo "Updating initramfs..."
+        #dracut -f
+        #echo "You still need to generate and sign the efi!"
 else
         echo "Distribution: $ID"
         echo "Could not find scripts for your distribution."
