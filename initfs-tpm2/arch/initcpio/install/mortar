@@ -4,6 +4,8 @@
 
 build() {
     add_module "tpm_crb"
+    add_module "tpm_tis"
+    add_module "tpm_tis_core"
     add_binary "/usr/lib/libtss2-tcti-device.so"
     add_module "tpm"
     add_binary "tpm2_unseal"
@@ -19,6 +21,11 @@ build() {
     add_binary "jose"
     add_binary "curl"
     add_binary "bash"
+    #Future-proofing for tpm2-tools v4
+    tpm2_pcrget_bin=$(command -v tpm2_pcrlist)
+    if [ -z "$tpm2_pcrget_bin" ]; then tpm2_pcrget_bin=$(command -v tpm2_pcrread); fi
+    if [ -z $tpm2_pcrget_bin ]; then die 1 "Unable to find a tpm2 bin to read pcrs."; fi
+    copy_exec "${tpm2_pcrget_bin}" 
     add_runscript
 }
 
@@ -29,8 +36,7 @@ by clevis and luksmeta. Use this hook in combination with any early userspace
 networking hook, such as mkinitcpio-netconf or mkinitcpio-ppp. It also requires
 mkinitcpio-utils for the encryptssh hook.
 
-An example usage would be to have 'netconf clevis encryptssh' added before your
-filesystems hook. You also need to configure clevis unlocking by using the
-'clevis bind luks' command on your luks partition.
+An example usage would be to have 'netconf mortar encryptssh' added before your
+filesystems hook. Refer to the mortar documentation for further direction if needed.  
 HELPEOF
 }
