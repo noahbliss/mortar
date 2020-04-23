@@ -24,8 +24,8 @@ build() {
     #Future-proofing for tpm2-tools v4
     tpm2_pcrget_bin=$(command -v tpm2_pcrlist)
     if [ -z "$tpm2_pcrget_bin" ]; then tpm2_pcrget_bin=$(command -v tpm2_pcrread); fi
-    if [ -z $tpm2_pcrget_bin ]; then die 1 "Unable to find a tpm2 bin to read pcrs."; fi
-    copy_exec "${tpm2_pcrget_bin}" 
+    if [ -z "$tpm2_pcrget_bin" ]; then die 1 "Unable to find a tpm2 bin to read pcrs."; fi
+    add_binary "${tpm2_pcrget_bin}" 
     add_runscript
 }
 
