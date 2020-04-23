@@ -1,0 +1,13 @@
+#!/bin/sh -e
+# Noah Bliss
+# Arch Variant
+
+ver="$1"
+kloc="$2"
+rdloc="/boot/initramfs-linux.img"
+
+if ! [ -e "$kloc" ]; then kloc="/boot/vmlinuz-linux"; fi
+if ! [ -e "$kloc" ]; then echo "Can't find the new kernel."; exit 1; fi
+if ! [ -e "$rdloc" ]; then echo "Can't find the new initramfs."; exit 2; fi
+
+/usr/local/sbin/mortar-compilesigninstall "$kloc" "$rdloc"

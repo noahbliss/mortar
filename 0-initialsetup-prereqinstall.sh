@@ -14,34 +14,14 @@ chmod go-rwx -R "$WORKING_DIR"
 # Figure out our distribuition. 
 source /etc/os-release
 
-# Debian
-if [ "$ID" == "debian" ]; then
-	apt-get update
-	apt-get install \
-		binutils \
-		efitools \
-		uuid-runtime
-
-	echo "Installed Debian dependencies."
-	echo "If you have a TPM 1.2 module you also need to run:"
-	echo "apt-get install tpm-tools trousers"
-	echo "If you have a TPM 2 module you also need to run:"
-	echo "apt-get install tpm2-tools clevis-tpm2 clevis-luks"
+# Install prerequisite packages. 
+if [ -f "$ID/prereqs.sh" ]; then 
+	source "$ID/prereqs.sh"; 
+else
+	echo "Could not find a prerequisite installer for $ID. Please only press enter if you want to continue at your own risk."
+	read -p "Press enter to continue." asdf
 fi
 
-# Arch
-if [ "$ID" == "arch" ]; then
-	pacman -Sy binutils \
-		efitools \
-		util-linux \
-		sbsigntools
-
-	echo "Installed Arch dependencies."
-        echo "If you have a TPM 1.2 module you also need to run:"
-        echo "Don't know the needed packages yet." #echo "pacman -Sy tpm-tools trousers"
-        echo "If you have a TPM 2 module you also need to run:"
-        echo "pacman -Sy tpm2-tools clevis"
-fi
 
 # Install the env file with a random key_uuid if it doesn't exist.
 if ! (command -v uuidgen >/dev/null); then echo "Cannot find uuidgen tool."; exit 1; fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 MORTAR_FILE="/etc/mortar/mortar.env"
-OLD_DIR="$PWD/"
+OLD_DIR="$PWD"
 source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."
 od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*
@@ -54,27 +54,13 @@ fi
 
 # Figure out our distribuition.
 source /etc/os-release
-initfsdir='initfs-tpm2/'
-# Debian
-if [ "$ID" == "debian" ] && [ -d "$OLD_DIR""$initfsdir""$ID" ]; then
-        cd "$OLD_DIR""$initfsdir""$ID"'/'
+tpmverdir='tpm2'
+# Defer to tpm and distro-specific install script.
+if [ -d "$OLD_DIR/""res/""$ID/""$tpmverdir/" ]; then
+        cd "$OLD_DIR/""res/""$ID/""$tpmverdir/"
         echo "Distribution: $ID"
         echo "Installing kernel update and initramfs build scripts with mortar.env values..."
-        bash install.sh # Start in new process so we don't get dropped to another directory. 
-        echo "Updating initramfs..."
-        update-initramfs -u
-        echo "You still need to generate and sign the efi!"
-elif [ "$ID" == "arch" ]; then
-        echo "Nothing set up for arch yet."
-elif [ "$ID" == "centos" ] && [ -d "$OLD_DIR""$initfsdir""$ID" ]; then
-        cd "$OLD_DIR""$initfsdir""$ID"'/'
-        echo "Distribution: $ID"
-	echo "Centos scripts and hooks are not yet ready for use."
-        #echo "Installing kernel update and initramfs build scripts with mortar.env values..."
-        #bash install.sh # Start in new process so we don't get dropped to another directory. 
-        #echo "Updating initramfs..."
-        #dracut -f
-        #echo "You still need to generate and sign the efi!"
+        bash install.sh # Start in new process so we don't get dropped to another directory.
 else
         echo "Distribution: $ID"
         echo "Could not find scripts for your distribution."
