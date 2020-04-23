@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Noah Bliss
-set -e
 MORTAR_FILE="/etc/mortar/mortar.env"
 OLD_DIR="$PWD"
 source "$MORTAR_FILE"
