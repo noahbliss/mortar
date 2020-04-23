@@ -12,3 +12,6 @@ libtss2-udev
 ```
 
 Manually install these with `dpkg -i` after running step `0`. Once installed, I recommend a reboot then continue with the typical installation process. 
+
+## Ubuntu 19.10 (and possibly 19.04)  
+These versions have the packages we need. For TPM2, run `apt-get install tpm2-tools clevis-tpm2 clevis-luks` after ./0- and perform the rest of the steps as normal. 
