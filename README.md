@@ -98,12 +98,10 @@ You can also run it interactively:
 ## Reboot and ensure that the new EFI file boots correctly.  
 Exactly what it says. If you opted against/efibootmgr failed to automatically install the boot entry, you should now add the EFI to your BIOS's boot list.  
 
-## (more to come)
-High level of the rest of the steps:  
+## Set up Secure Boot
 
- - Measure TPM PCR values and store for later comparison.  
-   - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
- - Install secureboot keys and enable secureboot.  
+Measure TPM PCR values and store for later comparison.  
+ - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
 
 Reboot into the BIOS:  
  - Put a password on the BIOS.  
