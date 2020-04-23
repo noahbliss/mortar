@@ -5,7 +5,7 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 |----------|-------|-------|--------|------|------|
 | Debian   | *     | X     | X      | X    |      |
 | [CentOS](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)   |       |       |        | !    |      |
-| Arch     |       |       |        |      |      |
+| Arch     | !    |       |        | !    |      |
 | OpenSUSE |       |       |        |      |      |
 | Fedora   |       |       |        |      |      |  
 | [Ubuntu](https://github.com/noahbliss/mortar/blob/master/docs/ubuntu-install.md)   | X      |       |        | X      |      |  
@@ -25,6 +25,8 @@ LUKS1 and LUKS2 are both supported.
 Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
 
 Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to decrypt the drive. Protect the root account. With TPM1.2 Mortar leverages READ_STCLEAR to make this more difficult (thanks morbitzer). I'm investigating a way to make tpm2 work *without* clevis down the road.  
+
+Note on updates: Unless there is a security issue that is remediated by a newer version of this framework, I highly advise that you _not_ upgrade unless you are experiencing issues. If your system works, decrypts, and survives kernel and initramfs upgrades, leave it. The majority of changes here are for new supported distros, development scalability, and streamlining of data injestion that may be incompatible with the version of mortar you are using. If you've freshly installed, by all means pull the latest version and use it. If you're sitting pretty, stay put. <3  
 
 ## How it works.  
 
