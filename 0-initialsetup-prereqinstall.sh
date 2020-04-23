@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Debian
+# Noah Bliss
 set -e
 ENVFILE="/etc/mortar/mortar.env" #Don't want to use $0 since we are using source against this file all over the place.
 CMDLINEFILE="/etc/mortar/cmdline.conf"
