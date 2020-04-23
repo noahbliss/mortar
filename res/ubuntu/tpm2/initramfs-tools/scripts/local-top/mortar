@@ -1,0 +1,73 @@
+#!/bin/sh
+# Noah Bliss
+# Modified for github.com/noahbliss/mortar
+# elements of this script inspired by https://github.com/latchset/clevis/blob/master/src/initramfs-tools/scripts/local-top/clevis.in as it existed on 1/14/2020
+
+mkdir -p /run/cryptsetup
+echo "Initializing... Please wait a few seconds for TPM validation of boot sequence."
+echo "Measuring boot system integrity..."
+CRYPTDEV= #LUKS Partition /dev/sda3
+CRYPTNAME= #Unlocked name (find in crypttab)
+SLOTUUID= #OF THE KEYSLOT NOT THE DISK find with `luksmeta show -d /dev/nvmluks0p2` and check the slot uuid. 
+SLOT= #Keyslot number for clevis.
+HEADERSHA256=
+HEADERFILE=
+TOKENID=
+
+# Test if the disk is already unlocked.
+if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi
+if ! [ -e "$CRYPTDEV" ]; then echo "Cannot find the crypto device at $CRYPTDEV"; exit 1; fi
+sleep 2
+
+# Verify the LUKS header.
+if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
+if cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"; then
+    HEADERSHA256CUR=`sha256sum "$HEADERFILE" | cut -f1 -d' '`
+    if [ "$HEADERSHA256" == "$HEADERSHA256CUR" ]; then
+        echo "HEADER VALIDATION SUCCEEDED."
+    else
+        echo "HEADER VALIDATION FAILED."
+        echo "WAITING 10 SECONDS BEFORE CONTINUING."
+        echo "KILL SYSTEM NOW IF YOU DO NOT TRUST THIS HEADER."
+        sleep 7
+        echo "3..."
+        sleep 1
+        echo "2..."
+        sleep 1
+        echo "1..."
+        sleep 1
+    fi
+    sleep 2
+fi
+
+# Verify Secureboot and decrypt.
+
+# If LUKS1
+if cryptsetup isLuks --type luks1 "$CRYPTDEV"; then
+	if luksmeta load -d "$CRYPTDEV" -s "$SLOT" -u "$SLOTUUID" | clevis decrypt | cryptsetup luksOpen "$CRYPTDEV" "$CRYPTNAME"; then
+		RESULT="pass"
+	else
+		RESULT="fail"
+	fi
+fi
+
+# If LUKS2
+if cryptsetup isLuks --type luks2 "$CRYPTDEV"; then
+	# jose jwe fmt -c outputs extra \n, so clean it up and pass to disk for unlocking.
+	key=`cryptsetup token export --token-id "$TOKENID" "$CRYPTDEV" | jose fmt -j- -Og jwe -o- | jose jwe fmt -i- -c | tr -d '\n'`
+	if echo -n "$key" | clevis decrypt | cryptsetup luksOpen "$CRYPTDEV" "$CRYPTNAME"; then
+		RESULT="pass"
+	else
+		RESULT="fail"
+        fi
+fi
+
+# Display Result
+if [ "$RESULT" == "pass" ]; then
+    echo -e "TPM VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
+    sleep 2
+else
+    echo "TPM VALIDATION FAILED."
+    sleep 3
+fi
+

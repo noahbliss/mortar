@@ -1,0 +1,97 @@
+#!/bin/bash
+# Noah Bliss
+# Modified for github.com/noahbliss/mortar
+# forked from https://github.com/latchset/clevis/blob/master/src/initramfs-tools/hooks/clevis.in on 1/14/2020
+# The following notice is included from the original file.
+#
+# Copyright (c) 2017 Shawn Rose
+# Author: Shawn Rose <shawnandrewrose@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+PREREQ=""
+prereqs()
+{
+     echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+     prereqs
+     exit 0
+     ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+die() {
+    code="$1"
+    msg="$2"
+    echo "    (ERROR): $msg" >&2
+    exit $1
+}
+
+find_binary() {
+    bin_name="$1"
+    resolved=$(command -v ${bin_name})
+    [ -z "$resolved" ] && die 1 "Unable to find ${bin_name}"
+    echo "$resolved"
+}
+
+if [ -n "${FORCE_CLEVIS}" ] && [ "${FORCE_CLEVIS}" != "n" ]; then
+    for f in /sbin/cryptsetup /sbin/dmsetup /lib/cryptsetup/askpass; do
+        if [ ! -e "${DESTDIR}${f}" ]; then
+            die 2 "cryptsetup utility '$f' wasn't found in the generated ramdisk image. "
+        fi
+    done
+fi    
+
+manual_add_modules tpm
+manual_add_modules tpm_crb
+manual_add_modules tpm_tis
+manual_add_modules tpm_tis_core
+
+copy_exec /usr/bin/clevis /bin || die 1 "/usr/bin/clevis not found"
+copy_exec /usr/bin/clevis-decrypt-tang /bin || die 1 "/usr/bin/clevis-decrypt-tang not found"
+copy_exec /usr/bin/clevis-decrypt-sss /bin || die 1 "/usr/bin/clevis-decrypt-sss not found"
+copy_exec /usr/bin/clevis-decrypt /bin || die 1 "/usr/bin/clevis-decrypt not found"
+if [ -x /usr/bin/clevis-decrypt-tpm2 ]; then
+    copy_exec /usr/bin/clevis-decrypt-tpm2 /bin || die 1 "/usr/bin/clevis-decrypt-tpm2 not found"
+    tpm2_creatprimary_bin=$(find_binary "tpm2_createprimary")
+    tpm2_unseal_bin=$(find_binary "tpm2_unseal")
+    tpm2_load_bin=$(find_binary "tpm2_load")
+    copy_exec "${tpm2_creatprimary_bin}" /bin || die 1 "Unable to copy ${tpm2_creatprimary_bin}" 
+    copy_exec "${tpm2_unseal_bin}" /bin || die 1 "Unable to copy ${tpm2_unseal_bin}"
+    copy_exec "${tpm2_load_bin}" /bin || die 1 "Unable to copy ${tpm2_load_bin}"
+    # Future-proof ourselves if tpm2-tools gets upgraded to 4. 
+    tpm2_pcrget_bin=$(command -v tpm2_pcrlist)
+    if [ -z "$tpm2_pcrget_bin" ]; then tpm2_pcrget_bin=$(command -v tpm2_pcrread); fi
+    if [ -z $tpm2_pcrget_bin ]; then die 1 "Unable to find a tpm2 bin to read pcrs."; fi
+    copy_exec "${tpm2_pcrget_bin}" /bin || die 1 "Unable to copy ${tpm2_pcrget_bin}"
+    for _LIBRARY in /usr/lib/x86_64-linux-gnu/libtss2-tcti-device.so*; do
+        if [ -e "${_LIBRARY}" ]; then
+            copy_exec "${_LIBRARY}" || die 2 "Unable to copy ${_LIBRARY}"
+        fi
+    done
+fi
+
+
+luksmeta_bin=$(find_binary "luksmeta")
+jose_bin=$(find_binary "jose")
+bash_bin=$(find_binary "bash")
+copy_exec "${luksmeta_bin}" /bin || die 2 "Unable to copy ${luksmeta_bin}"
+copy_exec "${jose_bin}" /bin || die 2 "Unable to copy ${jose_bin}"
+copy_exec "${bash_bin}" /bin || die 2 "Unable to copy ${bash_bin} to initrd image"
