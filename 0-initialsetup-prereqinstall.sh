@@ -15,7 +15,7 @@ chmod go-rwx -R "$WORKING_DIR"
 source /etc/os-release
 
 # Install prerequisite packages. 
-if [ -f "$ID/prereqs.sh" ]; then 
+if [ -f "res/$ID/prereqs.sh" ]; then 
 	source "$ID/prereqs.sh"; 
 else
 	echo "Could not find a prerequisite installer for $ID. Please only press enter if you want to continue at your own risk."
