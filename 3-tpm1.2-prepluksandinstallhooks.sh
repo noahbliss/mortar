@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Noah Bliss
 # Some inspiration taken from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/seal-nvram.sh
+set -e
 MORTAR_FILE="/etc/mortar/mortar.env"
 OLD_DIR="$PWD"
 source "$MORTAR_FILE"
