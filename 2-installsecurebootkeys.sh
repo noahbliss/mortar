@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 source /etc/mortar/mortar.env
 
 failed() {
