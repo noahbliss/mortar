@@ -8,7 +8,7 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 | Arch     | !    |       |        | !    |      |
 | OpenSUSE |       |       |        |      |      |
 | Fedora   |       |       |        |      |      |  
-| [Ubuntu](https://github.com/noahbliss/mortar/blob/master/docs/ubuntu-install.md)   | X      |       |        | X      |      |  
+| [Ubuntu](https://github.com/noahbliss/mortar/blob/master/docs/ubuntu-install.md)   | X      | *     |        | X      |      |  
 
 *=insufficiently tested, but presumed working  
 !=in progress
