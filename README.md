@@ -104,8 +104,9 @@ Measure TPM PCR values and store for later comparison.
  - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
 
 Reboot into the BIOS:  
+ - Put your BIOS's Secure Boot setting into "Audit" mode if possiblem then reboot into your OS and run `./2-`. If it does not have an audit mode, you will need to manually install your Secure Boot keys. They are located in /etc/mortar/private/*.crt you _may_ need to convert them to DER format first.  
+ - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this. NVIDIA proprietary graphics may also cause issues.).  
  - Put a password on the BIOS.  
- - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this).  
  - Boot the system with secureboot on (and pray).  
 
 
@@ -113,9 +114,12 @@ Reboot into the BIOS:
  - optional steps:  
     - Regenerate the signed EFI. This will move the first one to .old.  
     - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
+
+## Set up the TPM-Stored LUKS Key
+ 
  - Make sure you've set a BIOS password and made any necessary settings changes to your BIOS before the next step.  
- - Run the luks script for the TPM version being used.  
- - Update initramfs.  
+ - Run the luks script for the TPM version being used. `./3-`  
+ - Update initramfs. (done by the script)  
  - Regenerate EFI.  
  - Reboot and pray.  
  - If it all works, then you just booted to a login prompt with the disk being automatically decrypted.  
