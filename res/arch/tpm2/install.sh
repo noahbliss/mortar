@@ -16,4 +16,7 @@ sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e
 sed -i -e "/^HEADERFILE=.*/{s##HEADERFILE=\"$HEADERFILE\"#;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
 sed -i -e "/^TOKENID=.*/{s//TOKENID=$TOKENID/;:a" -e '$!N;$!b' -e '}' "$INITRAMFSSCRIPTFILE"
 
-echo "Installed. You'll need to run \`mkinitcpio -P\` then generate and sign the efi file."
+echo "Installed."
+echo "Please add \"mortar\" to your /etc/mkinitcpio.conf \"HOOKS=\" immediately prior to the \"encrypt\" hook."
+echo "You'll then need to run \`mkinitcpio -P\` then generate and sign the efi file with the \"mortar-compilesigninstall\" command."
+
