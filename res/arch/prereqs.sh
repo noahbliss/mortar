@@ -1,7 +1,8 @@
 pacman -Sy binutils \
         efitools \
         util-linux \
-        sbsigntools
+        sbsigntools \
+	luksmeta
 
 echo "Installed Arch dependencies."
 echo "If you have a TPM 1.2 module you also need to run:"
