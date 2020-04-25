@@ -5,7 +5,7 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 |----------|-------|-------|--------|------|------|
 | Debian   | *     | X     | X      | X    |      |
 | [CentOS](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)   |       |       |        | !    |      |
-| Arch     | !    |       |        | !    |      |
+| Arch     | X    | *      |        | X    |      |
 | OpenSUSE |       |       |        |      |      |
 | Fedora   |       |       |        |      |      |  
 | [Ubuntu](https://github.com/noahbliss/mortar/blob/master/docs/ubuntu-install.md)   | X      | *     |        | X      |      |  
