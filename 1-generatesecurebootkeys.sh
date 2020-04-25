@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 source mortar.env
 echo "Generating secureboot keys..."
 openssl req -new -x509 -newkey rsa:2048 -subj "/CN=PK$SECUREBOOT_MODIFIER/"  -keyout "$SECUREBOOT_PK_KEY"  -out "$SECUREBOOT_PK_CRT"  -days 7300 -nodes -sha256

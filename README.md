@@ -5,10 +5,10 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 |----------|-------|-------|--------|------|------|
 | Debian   | *     | X     | X      | X    |      |
 | [CentOS](https://github.com/noahbliss/mortar/blob/master/docs/centos-install.md)   |       |       |        | !    |      |
-| Arch     |       |       |        |      |      |
+| Arch     | !    |       |        | !    |      |
 | OpenSUSE |       |       |        |      |      |
 | Fedora   |       |       |        |      |      |  
-| [Ubuntu](https://github.com/noahbliss/mortar/blob/master/docs/ubuntu-install.md)   | X      |       |        | X      |      |  
+| [Ubuntu](https://github.com/noahbliss/mortar/blob/master/docs/ubuntu-install.md)   | X      | *     |        | X      |      |  
 
 *=insufficiently tested, but presumed working  
 !=in progress
@@ -25,6 +25,8 @@ LUKS1 and LUKS2 are both supported.
 Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
 
 Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to decrypt the drive. Protect the root account. With TPM1.2 Mortar leverages READ_STCLEAR to make this more difficult (thanks morbitzer). I'm investigating a way to make tpm2 work *without* clevis down the road.  
+
+Note on updates: Unless there is a security issue that is remediated by a newer version of this framework, I highly advise that you _not_ upgrade unless you are experiencing issues. If your system works, decrypts, and survives kernel and initramfs upgrades, leave it. The majority of changes here are for new supported distros, development scalability, and streamlining of data ingestion that may be incompatible with the version of mortar you are using. If you've freshly installed, by all means pull the latest version and use it. If you're sitting pretty, stay put. <3  
 
 ## How it works.  
 
@@ -96,16 +98,15 @@ You can also run it interactively:
 ## Reboot and ensure that the new EFI file boots correctly.  
 Exactly what it says. If you opted against/efibootmgr failed to automatically install the boot entry, you should now add the EFI to your BIOS's boot list.  
 
-## (more to come)
-High level of the rest of the steps:  
+## Set up Secure Boot
 
- - Measure TPM PCR values and store for later comparison.  
-   - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
- - Install secureboot keys and enable secureboot.  
+Measure TPM PCR values and store for later comparison.  
+ - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
 
 Reboot into the BIOS:  
+ - Put your BIOS's Secure Boot setting into "Audit" mode if possiblem then reboot into your OS and run `./2-`. If it does not have an audit mode, you will need to manually install your Secure Boot keys. They are located in /etc/mortar/private/*.crt you _may_ need to convert them to DER format first.  
+ - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this. NVIDIA proprietary graphics may also cause issues.).  
  - Put a password on the BIOS.  
- - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this).  
  - Boot the system with secureboot on (and pray).  
 
 
@@ -113,9 +114,12 @@ Reboot into the BIOS:
  - optional steps:  
     - Regenerate the signed EFI. This will move the first one to .old.  
     - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
+
+## Set up the TPM-Stored LUKS Key
+ 
  - Make sure you've set a BIOS password and made any necessary settings changes to your BIOS before the next step.  
- - Run the luks script for the TPM version being used.  
- - Update initramfs.  
+ - Run the luks script for the TPM version being used. `./3-`  
+ - Update initramfs. (done by the script)  
  - Regenerate EFI.  
  - Reboot and pray.  
  - If it all works, then you just booted to a login prompt with the disk being automatically decrypted.  
