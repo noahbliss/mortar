@@ -92,6 +92,9 @@ fi
 luksmeta_bin=$(find_binary "luksmeta")
 jose_bin=$(find_binary "jose")
 bash_bin=$(find_binary "bash")
+sha256sum_bin=$(find_binary "sha256sum")
+
 copy_exec "${luksmeta_bin}" /bin || die 2 "Unable to copy ${luksmeta_bin}"
 copy_exec "${jose_bin}" /bin || die 2 "Unable to copy ${jose_bin}"
 copy_exec "${bash_bin}" /bin || die 2 "Unable to copy ${bash_bin} to initrd image"
+copy_exec "${sha256sum_bin}" /bin || die 2 "Unable to copy ${sha256sum_bin} to initrd image"
