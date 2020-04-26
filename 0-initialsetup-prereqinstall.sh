@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Noah Bliss
-set -e
+
 ENVFILE="/etc/mortar/mortar.env" #Don't want to use $0 since we are using source against this file all over the place.
 CMDLINEFILE="/etc/mortar/cmdline.conf"
 WORKING_DIR='/etc/mortar/'
@@ -30,6 +30,9 @@ if ! [ -f "$ENVFILE" ]; then echo "Generating new KEY_UUID and installing mortar
 # Install cmdline.conf
 if ! [ -f "$CMDLINEFILE" ]; then echo "No CMDLINE options file found. Using currently running cmdline options from /proc/cmdline"; cat /proc/cmdline > "$CMDLINEFILE"; else echo "cmdline.conf already installed in $WORKING_DIR"; fi
 echo "Make sure to update the installed mortar.env with your TPM version and ensure all the paths are correct."
+if grep " splash" "$CMDLINEFILE" >/dev/null; then echo "WARNING - \"splash\" detected in "$CMDLINEFILE" this this may hide boot-time mortar output!"; fi
+if grep " quiet" "$CMDLINEFILE" >/dev/null; then echo "WARNING - \"quiet\" detected in "$CMDLINEFILE" this this may hide boot-time mortar output!"; fi
+
 
 # Install the efi signing script.
 cp bin/mortar-compilesigninstall /usr/local/sbin/mortar-compilesigninstall
