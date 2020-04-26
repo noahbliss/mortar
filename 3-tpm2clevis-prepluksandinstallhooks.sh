@@ -55,7 +55,7 @@ fi
 
 # Figure out our distribuition.
 source /etc/os-release
-tpmverdir='tpm2'
+tpmverdir='tpm2clevis'
 # Defer to tpm and distro-specific install script.
 if [ -d "$OLD_DIR/""res/""$ID/""$tpmverdir/" ]; then
         cd "$OLD_DIR/""res/""$ID/""$tpmverdir/"
