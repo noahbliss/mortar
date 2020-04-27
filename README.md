@@ -10,6 +10,7 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 | Fedora   |       |       |        |      |      |  
 | [Ubuntu](docs/ubuntu-install.md)   | X      | *     |        | X      |      |  
 
+**If your distro is a link above, read the page behind that link before attempting to install mortar.**  
 *=insufficiently tested, but presumed working  
 !=in progress
 
