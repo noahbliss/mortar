@@ -142,3 +142,11 @@ Optionally regenerate your EFI just to make sure it can still find your kernel a
 Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
 
 Investigate feasibility of storing the entire luks header in the nvram of the TPM module.  
+
+## Wrapping Up:  
+Mortar is, like most software "distributed as-is without claims of fitness for a specific purpose, yada yada." TL;DR if the 3-letter agencies of the various super powers want to get you, don't blame me if they succeed. That said, assuming your adversary doesn't have backdoors in your CPU/motherboard/BIOS firmwares, Mortar _may_ make "getting you" substantially more difficult. Don't use it for evil stuff.  
+
+Mortar is social! There is a Telegram group for discussing Mortar available at [t.me/linuxmortar](https://t.me/linuxmortar)  
+I can't promise I'll always be able to play tech support there, but discussion and tips are absolutely encouraged.  
+
+Good people responsibly disclose. If you find a security vulnerability in Mortar, I can be contacted through [Keybase](https://keybase.io/noahbliss) or Telegram (Find me in the group above). If these methods of contact do not work for you, please open an issue specifying a means by which I may reach you. I've no intention of depriving someone of a trophy 0-day discovery, but lets fix it first eh? ;P  
