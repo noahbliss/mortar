@@ -11,4 +11,15 @@ Run `tpm2_pcrlist` and check which banks (hash types) are being used. If _only o
 You can bypass this by doing the following:  
 `cd` into the mortar directory.  
 
-to be continued... but basically you get clevis-encrypt-tpm2 from the upstream dev's [github page](https://github.com/latchset/clevis/blob/master/src/pins/tpm2/clevis-encrypt-tpm2) and install that manually before step 3. You should be able to revert the file after you run step 3.  
+From here we'll grab `clevis-encrypt-tpm2` from the upstream development github, drop that in our system, run step 3, then restore the old file. [Clevis github page](https://github.com/latchset/clevis/blob/master/src/pins/tpm2/clevis-encrypt-tpm2)
+
+```
+if [ $UID -eq 0 ]; then
+binpath=$(command -v clevis-encrypt-tpm2)
+cp "$binpath" "$binpath.bak"
+wget https://raw.githubusercontent.com/latchset/clevis/master/src/pins/tpm2/clevis-encrypt-tpm2 -O "$binpath"
+#RUN STEP 3 from mortar.
+#When it's done and working as expected you can restore the old file with:
+#binpath=$(command -v clevis-encrypt-tpm2); mv "$binpath".bak "$binpath"
+fi
+```
