@@ -143,6 +143,15 @@ Add functionality that stores an OTP private key in the TPM instead of a LUKS ke
 
 Investigate feasibility of storing the entire luks header in the nvram of the TPM module.  
 
+## Uninstallation:  
+I'll preface this with "highly unrecommended/proceed at your own risk."  
+At a high level, you'll want to do the following:  
+  - Boot to BIOS, disable secureboot.
+  - Restore your old boot directory and use efibootmgr or your BIOS to reconfigure your system to boot with your old bootloader (likely grub).
+  - TEST THAT YOUR OLD BOOTLOADER WORKS (reboot with it).
+  - Remove mortar (git directory, /etc/mortar, /usr/local/sbin/mortar-compilesigninstall, and .efi files in your ESP partition, likely under /boot or /efi somewhere)
+  - Done
+
 ## Wrapping Up:  
 Mortar is, like most software "distributed as-is without claims of fitness for a specific purpose, yada yada." TL;DR if the 3-letter agencies of the various super powers want to get you, don't blame me if they succeed. That said, assuming your adversary doesn't have backdoors in your CPU/motherboard/BIOS firmwares, Mortar _may_ make "getting you" substantially more difficult. Don't use it for evil stuff.  
 
