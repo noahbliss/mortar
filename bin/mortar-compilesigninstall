@@ -33,6 +33,14 @@ testexist os-release /etc/os-release
 UNSIGNEDEFIPATH="$TARGET_EFI.unsigned"
 SIGNEDEFIPATH="$TARGET_EFI"
 
+# Update cmdline.conf if it contains the running kernel version and the new kernel specified is different from last time we ran this. 
+currentversion="$(uname -r)"
+if grep -q "$currentversion" "$CMDLINEFILE" && grep -q "$currentversion" /etc/mortar/kernel.env && ! grep -q "$currentversion" "$KERNELFILE"
+then
+	filename=$(sed -nE "s#.*/([A-Za-z0-9-]*$currentversion).*#\1#p" "$CMDLINEFILE")
+	sed -i "s:$filename:${KERNELFILE##*/}:g" "$CMDLINEFILE"
+fi	
+
 objcopy \
     --add-section .osrel=/etc/os-release --change-section-vma .osrel=0x20000 \
     --add-section .cmdline="$CMDLINEFILE" --change-section-vma .cmdline=0x30000 \
