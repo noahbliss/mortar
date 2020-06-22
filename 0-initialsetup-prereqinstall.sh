@@ -39,8 +39,3 @@ cp bin/mortar-compilesigninstall /usr/local/sbin/mortar-compilesigninstall
 if ! command -v mortar-compilesigninstall >/dev/null; then
 	echo "Installed mortar-compilesigninstall to /usr/local/sbin but couldn't find it in PATH. Please update your PATH to include /usr/local/sbin"
 fi
-
-
-## TPM2 Arch
-# tpm2-tools clevis
-
