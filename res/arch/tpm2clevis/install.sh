@@ -2,7 +2,9 @@
 # Noah Bliss
 
 # Install the kernel upgrade hook for generation and signing of the efi.
-cp -r kernel /etc/
+#cp -r kernel /etc/
+mkdir -p /usr/local/share/libalpm/hooks
+cp -r hooks/mortar.hook /usr/share/libalpm/hooks/
 
 # Install the initramfs script and update hook. 
 cp -r initcpio /etc/

@@ -1,0 +1,13 @@
+# Pacman post install hook since Arch doesn't seem to invoke kernel-install.
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = usr/lib/modules/*/vmlinuz
+Target = usr/lib/initcpio/*
+
+[Action]
+Description = MORTAR - Generating new EFI after kernel update...
+When = PostTransaction
+Exec = /usr/local/sbin/mortar-compilesigninstall
+NeedsTargets
