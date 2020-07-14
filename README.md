@@ -4,8 +4,8 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 |          | LUKS1 | LUKS2 | TPM1.2 | TPM2 (clevis) | TPM2 (non-clevis) |
 |----------|-------|-------|--------|------|------|
 | [Debian](docs/debian-install.md)   | *     | X     | X      | X    |      |
-| [CentOS](docs/centos-install.md)   |       |       |        | !    |      |
-| Arch     | *    | *      |        | *    |      |
+| [CentOS](docs/centos-install.md)   | !     |       |        | !    |      |
+| Arch     | X    | *      |        | X    |      |
 | OpenSUSE |       |       |        |      |      |
 | Fedora   |       |       |        |      |      |  
 | [Ubuntu](docs/ubuntu-install.md)   | X      | *     |        | X      |      |  
