@@ -44,7 +44,7 @@ TPM 1.2 errors accessing the index during boot: If using TPM 1.2, do not use "tr
 
 ## Installation (Debian with TPM 2 and LUKS 2 used for reference below).  
 
-### Install Debian  
+### Install Debian.  
 I used the netboot install method and let it configure most things for me. I selected the encrypted lvm on luks option and accepted all the default configurations.  
 
 This gave me:  
@@ -99,7 +99,7 @@ You can also run it interactively:
 ## Reboot and ensure that the new EFI file boots correctly.  
 Exactly what it says. If you opted against/efibootmgr failed to automatically install the boot entry, you should now add the EFI to your BIOS's boot list.  
 
-## Set up Secure Boot
+## Set up Secure Boot.
 
 Measure TPM PCR values and store for later comparison.  
  - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
@@ -116,7 +116,7 @@ Reboot into the BIOS:
     - Regenerate the signed EFI. This will move the first one to .old.  
     - Reboot, and reread the PCR values. This will let you see what stays the same when booting different EFI files that are both validly signed.  
 
-## Set up the TPM-Stored LUKS Key
+## Set up the TPM-Stored LUKS Key.
  
  - Make sure you've set a BIOS password and made any necessary settings changes to your BIOS before the next step.  
  - Run the luks script for the TPM version being used. `./3-`  
