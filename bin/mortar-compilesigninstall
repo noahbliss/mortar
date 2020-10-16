@@ -33,6 +33,12 @@ testexist os-release /etc/os-release
 UNSIGNEDEFIPATH="$TARGET_EFI.unsigned"
 SIGNEDEFIPATH="$TARGET_EFI"
 
+# Update or create kernel.env
+cat << EOF > /etc/mortar/kernel.env
+KERNELFILE="$KERNELFILE"
+INITRAMFSFILE="$INITRAMFSFILE"
+EOF
+
 # Update cmdline.conf if it contains the running kernel version and the new kernel specified is different from last time we ran this. 
 currentversion="$(uname -r)"
 if grep -q "$currentversion" "$CMDLINEFILE" && grep -q "$currentversion" /etc/mortar/kernel.env && ! grep -q "$currentversion" "$KERNELFILE"
@@ -67,8 +73,4 @@ if [ "$INSTALLENTRY" == "true" ]; then
 	if (efibootmgr -c -d "$EFI_DISK" -l "$mutilatedpath" -L "$PRETTY_NAME"); then echo "Added boot entry."; else echo "Error adding boot entry."; fi
 fi
 
-# Update or create kernel.env
-cat << EOF > /etc/mortar/kernel.env
-KERNELFILE="$KERNELFILE"
-INITRAMFSFILE="$INITRAMFSFILE"
-EOF
+
