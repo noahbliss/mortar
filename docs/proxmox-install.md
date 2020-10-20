@@ -265,7 +265,54 @@ Once done, `sync` and `reboot` to make sure nothing broke.
 This step can be performed however you see fit, but for this example we'll be using gocryptfs to do file-based encryption of our data disk.  
 However you configure this disk, ensure that the encryption key is stored on the already encrypted Proxmox OS disk on a location viewable only by the root user.  
 
+Install the prerequisites:  
+`apt install gdisk fuse gocryptfs`  
 
+Fuse will prompt the initramfs to regenerate, we need to refresh the mortar ef in this case.  
+`mortar-compilesigninstall`
+
+Use `cgdisk` to create a new partition on the empty disk. (Select New, then just press enter through all the defaults)  
+
+Select "Write" from the menu to write changes to disk, then exit.  
+
+We now need to format the new partition and ensure it is mounted automatically:  
+```
+mkfs.ext4 /dev/vdb1
+mkdir -p /mnt/data
+uuid=$(ls -l /dev/disk/by-uuid/ | grep vdb1 | cut -d' ' -f9)
+echo $uuid #make sure we have it.
+echo "UUID=$uuid /mnt/data    ext4    errors=remount-ro 0 1" >> /etc/fstab
+mount -a
+mount #make sure it is in the list!
+```
+If `mount -a` throws an error, edit /etc/fstab manually.  
+
+Create the directory for our gocryptfs keys and set permissions.  
+`mkdir -p /etc/gocryptfs/private`
+
+Next we generate our key.  
+`strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 512 | tr -d '\n' > /etc/gocryptfs/private/data.key`
+
+Set secure permissions:  
+`chmod go-rwx -R /etc/gocryptfs`  
+
+Create our target directories, and initialize gocryptfs configs.  
+```
+mkdir /mnt/data/{cryptsrc,cryptmnt}
+cd /mnt/data/
+cat /etc/gocryptfs/private/data.key | gocryptfs -init -q -config=/etc/gocryptfs/private/data.conf -- cryptsrc
+```
+
+Now we just need to add our setup to the fstab and mount the volume!
+```
+echo "/mnt/data/cryptsrc /mnt/data/cryptmnt fuse./usr/bin/gocryptfs nodev,nosuid,allow_other,quiet,passfile=/etc/gocryptfs/private/data.key,config=/etc/gocryptfs/private/data.conf 0 0">>/etc/fstab
+mount -a
+mount #make sure it is there!
+```
+
+At this point you should be ready to go! After gocryptfs mounts, any data placed inside `/mnt/data/cryptmnt` will be automatically encrypted using file-based encryption.  
+
+**NOTE: Any data placed on the disk OUTSIDE of that specific path will NOT be encrypted.**
 
 ## Step 7. Convert Debian to Proxmox.  
 
