@@ -161,3 +161,4 @@ Mortar is, like most software "distributed as-is without claims of fitness for a
 Mortar is social! There is a Telegram group for discussing Mortar available at [t.me/linuxmortar](https://t.me/linuxmortar)  
 I can't promise I'll always be able to play tech support there, but discussion and tips are absolutely encouraged.  
 
+
