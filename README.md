@@ -59,7 +59,7 @@ As I mentioned earlier, we should **not** be using an unencrypted /boot when we'
 For your reference, this defaulted to xts-aes512. I'd recommend either using xts-aes512 (security-leaning sweet spot) or xts-aes256 (performance-leaning sweet spot) but that's up to you.  
 
 You can test your expected performance of each with:  
-    cryptsetup benchmark  
+    `cryptsetup benchmark`  
 
 ## Install the prerequisite software.
 Do this as root in a directory only root can access. (I typically use /root/git at this stage.)  
@@ -156,7 +156,7 @@ At a high level, you'll want to do the following:
 Please refer to [the Security tab](../../security) for information regarding vulnerability disclosure and remediation.  
 
 ## Wrapping Up:  
-Mortar is, like most software "distributed as-is without claims of fitness for a specific purpose, yada yada." TL;DR if the 3-letter agencies of the various super powers want to get you, don't blame me if they succeed. That said, assuming your adversary doesn't have backdoors in your CPU/motherboard/BIOS firmwares, Mortar _may_ make "getting you" substantially more difficult. Don't use it for evil stuff.  
+Mortar is, like most free software, "distributed as-is without claims of fitness for a specific purpose, yada yada." TL;DR if the 3-letter agencies of the various super powers want to get you, don't blame me if they succeed. That said, assuming your adversary doesn't have backdoors in your CPU/motherboard/BIOS firmwares, Mortar _may_ make "getting you" substantially more difficult. Don't use it for evil stuff.  
 
 Mortar is social! There is a Telegram group for discussing Mortar available at [t.me/linuxmortar](https://t.me/linuxmortar)  
 I can't promise I'll always be able to play tech support there, but discussion and tips are absolutely encouraged.  
