@@ -9,7 +9,7 @@
 
 1. Encrypt everything we can including hypervisor OS disk and VM data disks.
 2. Automatically unlock disks and restart VMs in event of a hypervisor reboot.
-3. Do NOT automatically unlock disks and protect the key if the system has been tampered with by storing the key in the TPM module and binding it to relevant PCRs.
+3. Do NOT automatically unlock disks and protect the key if the system has been tampered with. Achieved by storing the key in the TPM module and binding it to relevant PCRs.
 
 For this walk-through I'll be using a VM simulating a common Proxmox install environment:
 
