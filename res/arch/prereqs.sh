@@ -1,4 +1,4 @@
-pacman -Sy binutils \
+pacman -Sy --needed binutils \
         efitools \
         util-linux \
         sbsigntools \
