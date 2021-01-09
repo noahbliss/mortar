@@ -105,7 +105,7 @@ Measure TPM PCR values and store for later comparison.
  - TPM2: `tpm2_pcrlist` Look at 7 and 1 especially.  
 
 Reboot into the BIOS:  
- - Put your BIOS's Secure Boot setting into "Audit" mode if possiblem then reboot into your OS and run `./2-`. If it does not have an audit mode, you will need to manually install your Secure Boot keys. They are located in /etc/mortar/private/*.crt you _may_ need to convert them to DER format first.  
+ - Put your BIOS's Secure Boot setting into "Audit" mode if possible then reboot into your OS and run `./2-`. If it does not have an audit mode, you will need to manually install your Secure Boot keys. They are located in /etc/mortar/private/*.crt you _may_ need to convert them to DER format first.  
  - Enroll any hashes that need to be enrolled (especially if booting from a raid-controller-hosted disk, system may not boot without this. NVIDIA proprietary graphics may also cause issues.).  
  - Put a password on the BIOS.  
  - Boot the system with secureboot on (and pray).  
