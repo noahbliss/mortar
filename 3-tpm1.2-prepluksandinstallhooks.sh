@@ -7,22 +7,47 @@ source "$MORTAR_FILE"
 echo "Testing if secure boot is on and working."
 od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*
 read -p  "ENTER to continue only if the last number is a \"1\" and you are sure the TPM registers are as you want them." asdf
+
+#Remove tpmfs from failed runs if applicable.
+if [[ -d tmpramfs ]]; then
+	echo "Removing existing tmpfs..."
+	umount tmpramfs
+	rm -r tmpramfs
+fi
+
+
+#Create tpmramfs for generated mortar key and read user luks password to file.
+if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
+	echo "Created tmpfs to store luks keys."
+	echo -n "Enter luks password: "
+	read -s PASSWORD
+	echo
+	echo -n $PASSWORD > tmpramfs/user.key
+	unset PASSWORD	
+else
+	echo "Problem setting up tmpfs for luks key storage"
+	exit 1
+fi
+
 if (command -v luksmeta >/dev/null); then
 	echo "Wiping any existing metadata in the luks keyslot."
 	luksmeta wipe -d "$CRYPTDEV" -s "$SLOT"
 fi
-echo "Wiping any old luks key in the keyslot. (You'll need to enter a password.)"
-cryptsetup luksKillSlot "$CRYPTDEV" "$SLOT"
-read -p "If this is the first time running, do you want to attempt taking ownership of the tpm? (y/N): " takeowner
+
+echo "Wiping any old luks key in the keyslot..."
+cryptsetup luksKillSlot --key-file tmpramfs/user.key "$CRYPTDEV" "$SLOT"
+read -p "If this is the first time running, do you want to attempt taking ownership of the tpm? (y/N): " takeowner	
 case "$takeowner" in
 	[yY]*) tpm_takeownership -z ;;
 esac
 
-if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
+#Only procede if tpmramfs exists
+if [[ -d tmpramfs ]]; then
 	echo "Generating key..."
 	dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
 	chmod 700 tmpramfs/mortar.key
-	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key 
+	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key --key-file tmpramfs/user.key
+	
 	echo "Sealing key to TPM..."
 	if [ -z "$TPMINDEX" ]; then echo "TPMINDEX not set."; exit 1; fi
 	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
@@ -37,9 +62,11 @@ if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); t
 		tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
 	fi
 	# Get rid of the key in the ramdisk.
+	echo "Cleaning up luks keys and tmpfs..."
 	rm  tmpramfs/mortar.key
+	rm	tmpramfs/user.key
 	umount -l tmpramfs
-	rmdir tmpramfs
+	rm -r tmpramfs
 else
 	echo "Failed to create tmpramfs for storing the key."
 	exit 1
