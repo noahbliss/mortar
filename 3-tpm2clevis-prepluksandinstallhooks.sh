@@ -16,6 +16,26 @@ if [ -z "$LUKSVER" ]; then
 	fi
 fi
 
+#Remove tpmfs from failed runs if applicable.
+if [[ -d tmpramfs ]]; then
+	echo "Removing existing tmpramfs..."
+	umount tmpramfs
+	rm -r tmpramfs
+fi
+
+#Create tpmramfs for read user luks password to file.
+if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
+	echo "Created tmpfs to store luks keys."
+	echo -n "Enter luks password: "
+	read -s PASSWORD
+	echo
+	echo -n $PASSWORD > tmpramfs/user.key
+	unset PASSWORD	
+else
+	echo "Problem setting up tmpfs for luks key storage"
+	exit 1
+fi
+
 # if luks1
 if [ "$LUKSVER" == "1" ]; then
 	echo "Wiping any existing metadata in the luks keyslot."
@@ -28,10 +48,16 @@ if [ "$LUKSVER" == "2" ]; then
 	cryptsetup token remove --token-id "$TOKENID" "$CRYPTDEV"
 fi
 
+
 echo "Wiping any old luks key in the keyslot. (You'll need to enter a password.)"
-cryptsetup luksKillSlot "$CRYPTDEV" "$SLOT"
+cryptsetup luksKillSlot --key-file tmpramfs/user.key "$CRYPTDEV" "$SLOT" 
 echo "Generating clevis key, adding it to the luks slot, and mapping it to the TPM PCRs."
-clevis-luks-bind -d "$CRYPTDEV" -s "$SLOT" tpm2 '{"pcr_bank":"'"$TPMHASHTYPE"'","pcr_ids":"'"$BINDPCR"'"}'
+clevis-luks-bind -d "$CRYPTDEV" -s "$SLOT" tpm2 '{"pcr_bank":"'"$TPMHASHTYPE"'","pcr_ids":"'"$BINDPCR"'"}' -k tmpramfs/user.key
+echo "Wiping keys and unmounting tmpramfs."
+rm tmpramfs/user.key
+umount -l tmpramfs
+rm -r tmpramfs
+
 echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
