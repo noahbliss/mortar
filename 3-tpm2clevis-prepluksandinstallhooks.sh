@@ -47,10 +47,10 @@ if [ "$LUKSVER" == "2" ]; then
 fi
 
 
-echo "Wiping any old luks key in the keyslot. (You'll need to enter a password.)"
+echo "Wiping any old luks key in the keyslot."
 cryptsetup luksKillSlot --key-file tmpramfs/user.key "$CRYPTDEV" "$SLOT" 
 echo "Generating clevis key, adding it to the luks slot, and mapping it to the TPM PCRs."
-clevis-luks-bind -d "$CRYPTDEV" -s "$SLOT" tpm2 '{"pcr_bank":"'"$TPMHASHTYPE"'","pcr_ids":"'"$BINDPCR"'"}' -k tmpramfs/user.key
+clevis-luks-bind -d "$CRYPTDEV" -k tmpramfs/user.key -s "$SLOT" tpm2 '{"pcr_bank":"'"$TPMHASHTYPE"'","pcr_ids":"'"$BINDPCR"'"}'
 echo "Wiping keys and unmounting tmpramfs."
 rm tmpramfs/user.key
 umount -l tmpramfs
