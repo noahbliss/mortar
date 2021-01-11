@@ -9,7 +9,7 @@ od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*
 read -p  "ENTER to continue only if the last number is a \"1\" and you are sure the TPM registers are as you want them." asdf
 
 #Remove tpmfs from failed runs if applicable.
-if [[ -d tmpramfs ]]; then
+if [ -d tmpramfs ]; then
 	echo "Removing existing tmpfs..."
 	umount tmpramfs
 	rm -r tmpramfs
@@ -17,11 +17,9 @@ fi
 
 
 #Create tpmramfs for generated mortar key and read user luks password to file.
-if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
+if [ mkdir tmpramfs; mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs ]; then
 	echo "Created tmpfs to store luks keys."
-	echo -n "Enter luks password: "
-	read -s PASSWORD
-	echo
+	echo -n "Enter luks password: "; read -s PASSWORD; echo
 	echo -n $PASSWORD > tmpramfs/user.key
 	unset PASSWORD	
 else
@@ -29,7 +27,7 @@ else
 	exit 1
 fi
 
-if (command -v luksmeta >/dev/null); then
+if [ command -v luksmeta >/dev/null ]; then
 	echo "Wiping any existing metadata in the luks keyslot."
 	luksmeta wipe -d "$CRYPTDEV" -s "$SLOT"
 fi
@@ -42,7 +40,7 @@ case "$takeowner" in
 esac
 
 #Only procede if tpmramfs exists
-if [[ -d tmpramfs ]]; then
+if [ -d tmpramfs ]; then
 	echo "Generating key..."
 	dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
 	chmod 700 tmpramfs/mortar.key
@@ -53,11 +51,11 @@ if [[ -d tmpramfs ]]; then
 	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
 	read -s -r -p "Owner password: " OWNERPW
 	# Wipe index if it is populated.
-	if (tpm_nvinfo | grep \($TPMINDEX\) > /dev/null); then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
+	if [ tpm_nvinfo | grep \($TPMINDEX\) > /dev/null ]; then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
 	# Convert PCR format...
 	PCRS=$(echo "-r""$BINDPCR" | sed 's/,/ -r/g')
 	# Create new index sealed to PCRS. 
-	if (tpm_nvdefine -i "$TPMINDEX" -s $(wc -c tmpramfs/mortar.key) -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS); then
+	if [ tpm_nvdefine -i "$TPMINDEX" -s $(wc -c tmpramfs/mortar.key) -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS ]; then
 		# Write key into the index...
 		tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
 	fi

@@ -17,14 +17,14 @@ if [ -z "$LUKSVER" ]; then
 fi
 
 #Remove tpmfs from failed runs if applicable.
-if [[ -d tmpramfs ]]; then
+if [ -d tmpramfs ]; then
 	echo "Removing existing tmpramfs..."
 	umount tmpramfs
 	rm -r tmpramfs
 fi
 
 #Create tpmramfs for read user luks password to file.
-if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
+if [ mkdir tmpramfs; mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs ]; then
 	echo "Created tmpfs to store luks keys."
 	echo -n "Enter luks password: "
 	read -s PASSWORD
