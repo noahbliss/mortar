@@ -18,6 +18,7 @@ fi
 #Create tpmramfs for generated mortar key and read user luks password to file.
 if mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs; then
 	echo "Created tmpramfs for storing the key."
+	trap "if [ -f tmpramfs/user.key ]; then rm -f tmpramfs/user.key; fi" EXIT
 	echo -n "Enter luks password: "; read -s PASSWORD; echo
 	echo -n "$PASSWORD" > tmpramfs/user.key
 	unset PASSWORD
