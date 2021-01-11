@@ -38,36 +38,30 @@ case "$takeowner" in
 	[yY]*) tpm_takeownership -z ;;
 esac
 
-#Only proceed if tpmramfs exists
-if [ -d tmpramfs ]; then
-	echo "Generating key..."
-	dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
-	chmod 700 tmpramfs/mortar.key
-	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key --key-file tmpramfs/user.key
-	
-	echo "Sealing key to TPM..."
-	if [ -z "$TPMINDEX" ]; then echo "TPMINDEX not set."; exit 1; fi
-	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
-	read -s -r -p "Owner password: " OWNERPW
-	# Wipe index if it is populated.
-	if tpm_nvinfo | grep \($TPMINDEX\) > /dev/null; then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
-	# Convert PCR format...
-	PCRS=`echo "-r""$BINDPCR" | sed 's/,/ -r/g'`
-	# Create new index sealed to PCRS. 
-	if tpm_nvdefine -i "$TPMINDEX" -s `wc -c tmpramfs/mortar.key` -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS; then
-		# Write key into the index...
-		tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
-	fi
-	# Get rid of the key in the ramdisk.
-	echo "Cleaning up luks keys and tmpfs..."
-	rm tmpramfs/mortar.key
-	rm tmpramfs/user.key
-	umount -l tmpramfs
-	rm -rf tmpramfs
-else
-	echo "Failed to create tmpramfs for storing the key."
-	exit 1
+echo "Generating key..."
+dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
+chmod 700 tmpramfs/mortar.key
+cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key --key-file tmpramfs/user.key
+
+echo "Sealing key to TPM..."
+if [ -z "$TPMINDEX" ]; then echo "TPMINDEX not set."; exit 1; fi
+PERMISSIONS="OWNERWRITE|READ_STCLEAR"
+read -s -r -p "Owner password: " OWNERPW
+# Wipe index if it is populated.
+if tpm_nvinfo | grep \($TPMINDEX\) > /dev/null; then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
+# Convert PCR format...
+PCRS=`echo "-r""$BINDPCR" | sed 's/,/ -r/g'`
+# Create new index sealed to PCRS. 
+if tpm_nvdefine -i "$TPMINDEX" -s `wc -c tmpramfs/mortar.key` -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS; then
+	# Write key into the index...
+	tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
 fi
+# Get rid of the key in the ramdisk.
+echo "Cleaning up luks keys and tmpfs..."
+rm tmpramfs/mortar.key
+rm tmpramfs/user.key
+umount -l tmpramfs
+rm -rf tmpramfs
 
 echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
