@@ -9,11 +9,30 @@ read -p  "ENTER to continue only if the last number is a \"1\" and you are sure 
 
 # Determine LUKS version of CRYPTDEV if not told.
 if [ -z "$LUKSVER" ]; then
-	if (cryptsetup isLuks --type luks1 "$CRYPTDEV"); then 
+	if cryptsetup isLuks --type luks1 "$CRYPTDEV"; then 
 		LUKSVER=1
-	elif (cryptsetup isLuks --type luks2 "$CRYPTDEV"); then
+	elif cryptsetup isLuks --type luks2 "$CRYPTDEV"; then
 		LUKSVER=2
 	fi
+fi
+
+#Remove tpmfs from failed runs if applicable.
+if [ -d tmpramfs ]; then
+	echo "Removing existing tmpramfs..."
+	umount tmpramfs
+	rm -rf tmpramfs
+fi
+
+#Create tpmramfs for read user luks password to file.
+if mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs; then
+	echo "Created tmpramfs to store luks key during setup."
+	trap "if [ -f tmpramfs/user.key ]; then rm -f tmpramfs/user.key; fi" EXIT
+	echo -n "Enter luks password: "; read -s PASSWORD; echo
+	echo -n "$PASSWORD" > tmpramfs/user.key
+	unset PASSWORD
+else
+	echo "Failed to create tmpramfs for storing the key."
+	exit 1
 fi
 
 # if luks1
@@ -28,19 +47,25 @@ if [ "$LUKSVER" == "2" ]; then
 	cryptsetup token remove --token-id "$TOKENID" "$CRYPTDEV"
 fi
 
-echo "Wiping any old luks key in the keyslot. (You'll need to enter a password.)"
-cryptsetup luksKillSlot "$CRYPTDEV" "$SLOT"
+
+echo "Wiping any old luks key in the keyslot."
+cryptsetup luksKillSlot --key-file tmpramfs/user.key "$CRYPTDEV" "$SLOT" 
 echo "Generating clevis key, adding it to the luks slot, and mapping it to the TPM PCRs."
-clevis-luks-bind -d "$CRYPTDEV" -s "$SLOT" tpm2 '{"pcr_bank":"'"$TPMHASHTYPE"'","pcr_ids":"'"$BINDPCR"'"}'
+clevis-luks-bind -d "$CRYPTDEV" -k tmpramfs/user.key -s "$SLOT" tpm2 '{"pcr_bank":"'"$TPMHASHTYPE"'","pcr_ids":"'"$BINDPCR"'"}'
+echo "Wiping keys and unmounting tmpramfs."
+rm tmpramfs/user.key
+umount -l tmpramfs
+rm -rf tmpramfs
+
 echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
-HEADERSHA256=$(sha256sum "$HEADERFILE" | cut -f1 -d' ')
+HEADERSHA256=`sha256sum "$HEADERFILE" | cut -f1 -d' '`
 sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$MORTAR_FILE"
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 # Get slot uuid and write to MORTAR_FILE. 
 if [ "$LUKSVER" == "1" ]; then
-	CURSLOTUUID=$(luksmeta show -d  "$CRYPTDEV" -s "$SLOT")
+	CURSLOTUUID=`luksmeta show -d  "$CRYPTDEV" -s "$SLOT"`
 	if [ -z "$SLOTUUID" ]; then 
 		SLOTUUID="$CURSLOTUUID"
 		sed -i -e "/SLOTUUID=/{s//SLOTUUID=$SLOTUUID/;:a" -e '$!N;$!ba' -e '}' "$MORTAR_FILE"
