@@ -17,7 +17,7 @@ fi
 
 
 #Create tpmramfs for generated mortar key and read user luks password to file.
-if [ mkdir tmpramfs; mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs ]; then
+if mkdir tmpramfs; mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs; then
 	echo "Created tmpfs to store luks keys."
 	echo -n "Enter luks password: "; read -s PASSWORD; echo
 	echo -n $PASSWORD > tmpramfs/user.key
@@ -27,7 +27,7 @@ else
 	exit 1
 fi
 
-if [ command -v luksmeta >/dev/null ]; then
+if command -v luksmeta >/dev/null; then
 	echo "Wiping any existing metadata in the luks keyslot."
 	luksmeta wipe -d "$CRYPTDEV" -s "$SLOT"
 fi
@@ -51,11 +51,11 @@ if [ -d tmpramfs ]; then
 	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
 	read -s -r -p "Owner password: " OWNERPW
 	# Wipe index if it is populated.
-	if [ tpm_nvinfo | grep \($TPMINDEX\) > /dev/null ]; then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
+	if tpm_nvinfo | grep \($TPMINDEX\) > /dev/null; then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
 	# Convert PCR format...
 	PCRS=$(echo "-r""$BINDPCR" | sed 's/,/ -r/g')
 	# Create new index sealed to PCRS. 
-	if [ tpm_nvdefine -i "$TPMINDEX" -s $(wc -c tmpramfs/mortar.key) -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS ]; then
+	if tpm_nvdefine -i "$TPMINDEX" -s $(wc -c tmpramfs/mortar.key) -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS; then
 		# Write key into the index...
 		tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
 	fi

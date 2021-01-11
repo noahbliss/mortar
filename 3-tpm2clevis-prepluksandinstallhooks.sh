@@ -24,11 +24,9 @@ if [ -d tmpramfs ]; then
 fi
 
 #Create tpmramfs for read user luks password to file.
-if [ mkdir tmpramfs; mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs ]; then
+if mkdir tmpramfs; mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs; then
 	echo "Created tmpfs to store luks keys."
-	echo -n "Enter luks password: "
-	read -s PASSWORD
-	echo
+	echo -n "Enter luks password: "; read -s PASSWORD; echo
 	echo -n $PASSWORD > tmpramfs/user.key
 	unset PASSWORD	
 else
