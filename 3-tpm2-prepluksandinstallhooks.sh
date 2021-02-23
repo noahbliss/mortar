@@ -15,7 +15,17 @@ echo "Wiping any old luks key in the keyslot. (You'll need to enter a password.)
 cryptsetup luksKillSlot "$CRYPTDEV" "$SLOT"
 read -p "If this is the first time running, do you want to attempt taking ownership of the tpm? (y/N): " takeowner
 case "$takeowner" in
-	[yY]*) tpm_takeownership -z ;;
+	[yY]*)
+		read -s -r -p "Owner password: " OWNERPW
+		echo
+		if tpm2_takeownership --owner-passwd="$OWNERPW" 
+		then
+			echo "Owner password updated."
+		else
+			echo "Set owner password failed. Try allowing ownership in the BIOS."
+			exit 1
+		fi
+		;;
 esac
 
 if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); then
@@ -24,14 +34,20 @@ if (mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs); t
 	chmod 700 tmpramfs/mortar.key
 	cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key 
 	echo "Sealing key to TPM..."
-	if [ -z "$TPMINDEX" ]; then echo "TPMINDEX not set."; exit 1; fi
 	PERMISSIONS="OWNERWRITE|READ_STCLEAR"
-	read -s -r -p "Owner password: " OWNERPW
+	if [ -z $OWNERPW ]; then read -s -r -p "Owner password: " OWNERPW; fi
 	# Wipe index if it is populated.
-	if (tpm_nvinfo | grep \($TPMINDEX\) > /dev/null); then tpm_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
+	if ! [ -z $TPM2INDEX ] && (tpm2_nvlist | grep \($TPM2INDEX\) > /dev/null); then tpm2_nvrelease -i "$TPMINDEX" -o"$OWNERPW"; fi
 	# Convert PCR format...
-	PCRS=$(echo "-r""$BINDPCR" | sed 's/,/ -r/g')
+	PCRS=$(echo "-r""$BINDPCR" | sed 's/,/ -r/g') # this format may not be tpm2 compatible
 	# Create new index sealed to PCRS. 
+	if [ -z $TPM2INDEX ]; then # we use the first free index
+		TPM2INDEX=$(tpm2_nvdefine -s `wc -c tmpramfs/mortar.key` ) ## I LEFT OFF HERE
+		if [ $? -ne 0 ]; then echo "Failed to define TPM policy."; exit 1; fi
+	else # we use the index specified
+		tpm2_nvdefine --index="$TPM2INDEX" 
+		if [ $? -ne 0 ]; then echo "Failed to define TPM policy in index $TPM2INDEX"; exit 1; fi
+	fi
 	if (tpm_nvdefine -i "$TPMINDEX" -s $(wc -c tmpramfs/mortar.key) -p "$PERMISSIONS" -o "$OWNERPW" -z $PCRS); then
 		# Write key into the index...
 		tpm_nvwrite -i "$TPMINDEX" -f tmpramfs/mortar.key -z --password="$OWNERPW"
