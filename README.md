@@ -20,9 +20,9 @@ TL;DR virtually all Linux distributions are critically vulnerable to physical bo
 
 Mortar is an attempt to take the headache and fragmented processes out of joining Secureboot, TPM keys, and LUKS.  
 
-**Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed.** The TPM is used to effectively whitelist certain boot states. Disks are automatically unlocked once the boot sequence has been validated. This makes full-disk encryption dramatically more convenient for end-users and viable on servers (as they can automatically unlock on reboot).  
+**Through the "Mortar Model" everything on disk that is used is either encrypted, signed, or hashed.** The only location cleartext secrets are stored is in the TPM module, which is purpose-built to protect these keys against physical and virtual theft. The TPM is used to effectively whitelist certain boot states and Mortar configures it to only release the key when an untampered system is observed. Since this validation and unlocking process is completely automated, full-disk encryption becomes dramatically more convenient for end-users and finally viable on servers as intact systems can fully restart without human interaction.  
 
-Mortar aims to support both TPM 1.2 (via its own implementation) and TPM 2 (via clevis).
+Mortar aims to support both TPM 1.2 (via its own implementation) and TPM 2 (via clevis).  
 
 LUKS1 and LUKS2 are both supported.  
 
