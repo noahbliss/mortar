@@ -26,7 +26,7 @@ Mortar aims to support both TPM 1.2 (via its own implementation) and TPM 2 (via 
 
 LUKS1 and LUKS2 are both supported.  
 
-Mortar aims to be distribution agnostic. Initial developments are on Arch Linux and Debian Linux.  
+Mortar is modular and designed to be distribution agnostic, but Debian receives the most love.  
 
 Security note with TPM2: Clevis allows anyone with root access to fetch sufficent private data to unlock the drive. Protect the root account. With TPM1.2 Mortar leverages READ_STCLEAR to make this more difficult (thanks morbitzer). I'm investigating a way to make tpm2 work *without* clevis down the road.  
 
