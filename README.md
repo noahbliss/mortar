@@ -7,7 +7,7 @@ Framework to join Linux's physical security bricks. Mortar is essentially Linux-
 | [CentOS](docs/centos-install.md)   | !     |       |        | !    |      |
 | Arch     | X    | *      |        | X    |      |
 | OpenSUSE |       |       |        |      |      |
-| Fedora   |       |       |        |      |      |  
+| Fedora   | !      |       |        | !     |      |  
 | [Ubuntu](docs/ubuntu-install.md)   | X      | *     |        | X      |      |  
 
 **If your distro is a link above, read the page behind that link before attempting to install mortar.**  
