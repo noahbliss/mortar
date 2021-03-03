@@ -32,6 +32,7 @@ if ! [ -f "$CMDLINEFILE" ]; then echo "No CMDLINE options file found. Using curr
 echo "Make sure to update the installed mortar.env with your TPM version and ensure all the paths are correct."
 if grep " splash" "$CMDLINEFILE" >/dev/null; then echo "WARNING - \"splash\" detected in "$CMDLINEFILE" this this may hide boot-time mortar output!"; fi
 if grep " quiet" "$CMDLINEFILE" >/dev/null; then echo "WARNING - \"quiet\" detected in "$CMDLINEFILE" this this may hide boot-time mortar output!"; fi
+if grep " rhgb" "$CMDLINEFILE" >/dev/null; then echo "WARNING - \"rhgb\" detected in "$CMDLINEFILE" this this may hide boot-time mortar output!"; fi
 
 
 # Install the efi signing script.
