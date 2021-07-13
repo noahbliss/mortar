@@ -1,4 +1,5 @@
 pacman -Sy --needed binutils \
+	coreutils \
         efitools \
         util-linux \
         sbsigntools \
