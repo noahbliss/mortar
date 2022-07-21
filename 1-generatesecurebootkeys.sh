@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
-source mortar.env
+MORTAR_FILE="/etc/mortar/mortar.env"
+source "$MORTAR_FILE"
 echo "Generating secureboot keys..."
 openssl req -new -x509 -newkey rsa:2048 -subj "/CN=PK$SECUREBOOT_MODIFIER/"  -keyout "$SECUREBOOT_PK_KEY"  -out "$SECUREBOOT_PK_CRT"  -days 7300 -nodes -sha256
 openssl req -new -x509 -newkey rsa:2048 -subj "/CN=KEK$SECUREBOOT_MODIFIER/" -keyout "$SECUREBOOT_KEK_KEY" -out "$SECUREBOOT_KEK_CRT" -days 7300 -nodes -sha256
