@@ -47,10 +47,10 @@ done
 
 # Get Mortar key.
 if tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null; then
- echo -e "TPM VALIDATION SUCCEEDED.\n\n"
+  echo -e "TPM VALIDATION SUCCEEDED.\n\n"
 else
- echo -e "TPM VALIDATION FAILED.\n\n"
- sleep 3
+  echo -e "TPM VALIDATION FAILED.\n\n"
+  sleep 3
 fi
 
 # Disable future key fetches.
