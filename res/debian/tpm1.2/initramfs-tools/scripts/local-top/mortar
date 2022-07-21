@@ -46,7 +46,13 @@ for CRYPTPAIR in $CRYPTPAIRS; do
 done
 
 # Get Mortar key.
-tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null
+if tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null; then
+ echo -e "TPM VALIDATION SUCCEEDED.\n\n"
+else
+ echo -e "TPM VALIDATION FAILED.\n\n"
+ sleep 3
+fi
+
 # Disable future key fetches.
 tcsd && sleep 1
 tpm_nvread -i "$TPMINDEX" -s 0 >> /dev/null
