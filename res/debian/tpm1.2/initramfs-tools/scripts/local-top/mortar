@@ -57,7 +57,7 @@ fi
 tcsd && sleep 1
 tpm_nvread -i "$TPMINDEX" -s 0 >> /dev/null
 
-# Decrypt disk.
+# Decrypt disk(s).
 for CRYPTPAIR in $CRYPTPAIRS; do 
   CRYPTNAME=${CRYPTPAIR%:*}
   CRYPTDEV=${CRYPTPAIR#*:}
