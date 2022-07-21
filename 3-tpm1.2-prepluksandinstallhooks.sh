@@ -81,8 +81,15 @@ rm -rf tmpramfs
 echo "Adding new sha256 of the luks header to the mortar env file."
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
-HEADERSHA256=`sha256sum "$HEADERFILE" | cut -f1 -d' '`
-sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=$HEADERSHA256/;:a" -e '$!N;$!b' -e '}' "$MORTAR_FILE"
+HEADERSHA256=""
+for CRYPTNAME in $CRYPTNAMES; do
+  CRYPTDEV="$(cryptnametodevice $CRYPTNAME)"
+  if [ -z "$CRYPTDEV" ]; then echo "ERROR: cannot find CRYPTDEV for CRYPTNAME"; exit 1; fi
+  if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
+  cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"
+  HEADERSHA256="$(sha256sum "$HEADERFILE" | cut -f1 -d' ') $HEADERSHA256"
+done
+sed -i -e "/^HEADERSHA256=.*/{s//HEADERSHA256=\"$HEADERSHA256\"/;:a" -e '$!N;$!b' -e '}' "$MORTAR_FILE"
 if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
 
 # Figure out our distribuition.
