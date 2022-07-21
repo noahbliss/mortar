@@ -29,11 +29,21 @@ fi
 
 if command -v luksmeta >/dev/null; then
 	echo "Wiping any existing metadata in the luks keyslot."
-	luksmeta wipe -d "$CRYPTDEV" -s "$SLOT"
+  for CRYPTNAME in $CRYPTNAMES; do 
+    CRYPTDEV="$(cryptnametodevice $CRYPTNAME)"
+    if [ -z "$CRYPTDEV" ]; then echo "ERROR: cannot find CRYPTDEV for CRYPTNAME"; exit 1; fi
+    luksmeta wipe -d "$CRYPTDEV" -s "$SLOT"
+  done
+
 fi
 
 echo "Wiping any old luks key in the keyslot..."
-cryptsetup luksKillSlot --key-file tmpramfs/user.key "$CRYPTDEV" "$SLOT"
+for CRYPTNAME in $CRYPTNAMES; do
+  CRYPTDEV="$(cryptnametodevice $CRYPTNAME)"
+  if [ -z "$CRYPTDEV" ]; then echo "ERROR: cannot find CRYPTDEV for CRYPTNAME"; exit 1; fi
+  cryptsetup luksKillSlot --key-file tmpramfs/user.key "$CRYPTDEV" "$SLOT"
+done
+
 read -p "If this is the first time running, do you want to attempt taking ownership of the tpm? (y/N): " takeowner	
 case "$takeowner" in
 	[yY]*) tpm_takeownership -z ;;
@@ -42,7 +52,11 @@ esac
 echo "Generating key..."
 dd bs=1 count=512 if=/dev/urandom of=tmpramfs/mortar.key
 chmod 700 tmpramfs/mortar.key
-cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key --key-file tmpramfs/user.key
+for CRYPTNAME in $CRYPTNAMES; do
+  CRYPTDEV="$(cryptnametodevice $CRYPTNAME)"
+  if [ -z "$CRYPTDEV" ]; then echo "ERROR: cannot find CRYPTDEV for CRYPTNAME"; exit 1; fi
+  cryptsetup luksAddKey "$CRYPTDEV" --key-slot "$SLOT" tmpramfs/mortar.key --key-file tmpramfs/user.key
+done
 
 echo "Sealing key to TPM..."
 if [ -z "$TPMINDEX" ]; then echo "TPMINDEX not set."; exit 1; fi
