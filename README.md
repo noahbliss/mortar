@@ -1,6 +1,9 @@
 # Mortar  
 Framework to join Linux's physical security bricks. Mortar is essentially Linux-native TPM-backed Bitlocker.  
 
+<img src="https://forthebadge.com/images/badges/made-with-crayons.svg" alt="drawing" height="35.059"/>  <img src="https://forthebadge.com/images/badges/works-on-my-machine.svg" alt="drawing" height="35.059"/>
+
+
 |          | LUKS1 | LUKS2 | TPM1.2 | TPM2 (clevis) | TPM2 (non-clevis) |
 |----------|-------|-------|--------|------|------|
 | [Debian](docs/debian-install.md)/[Proxmox](docs/proxmox-install.md)   | *     | X     | X      | X    |      |
