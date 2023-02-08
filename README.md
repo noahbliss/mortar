@@ -132,22 +132,21 @@ Reboot into the BIOS:
  - If it all works, then you just booted to a login prompt with the disk being automatically unlocked.  
 
 ## Remove boot partition risk.
-`mkdir /boot2`  
-If EFI partition is inside /boot unmount it.  
-`umount -l /boot/efi`  
-Copy /boot contents to /boot2  
-`cp -r /boot/* /boot2`  
-unmount /boot  
-`mv /boot2 /boot`  
-**Remove /boot from /etc/fstab**  
-remount your EFI partition if it was inside /boot  
-`mount -a`  
-Optionally regenerate your EFI just to make sure it can still find your kernel and initramfs.  
+```bash
+mkdir /boot2
+umount -l /boot/efi # If EFI partition is inside /boot unmount it
+cp -ra /boot/* /boot2 # Copy /boot contents to /boot2
+umount /boot # unmount /boot  
+rmdir /boot && mv /boot2 /boot
+nano /etc/fstab # Remove /boot from /etc/fstab
+mount -a # remount your EFI partition if it was inside /boot
+mortar-compilesigninstall # (Optional) Make sure mortar can still find your kernel and initramfs
+```
+ 
 
 ## TODO:  
-Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
-
-Investigate feasibility of storing the entire luks header in the nvram of the TPM module.  
+ - Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
+ - Investigate feasibility of storing the entire luks header in the nvram of the TPM module.  
 
 ## Uninstallation:  
 I'll preface this with "highly unrecommended/proceed at your own risk."  
@@ -166,5 +165,3 @@ Mortar is, like most free software, "distributed as-is without claims of fitness
 
 Mortar is social! There is a Telegram group for discussing Mortar available at [t.me/linuxmortar](https://t.me/linuxmortar)  
 I can't promise I'll always be able to play tech support there, but discussion and tips are absolutely encouraged.  
-
-
