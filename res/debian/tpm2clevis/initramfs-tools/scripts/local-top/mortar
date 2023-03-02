@@ -3,6 +3,20 @@
 # Modified for github.com/noahbliss/mortar
 # elements of this script inspired by https://github.com/latchset/clevis/blob/master/src/initramfs-tools/scripts/local-top/clevis.in as it existed on 1/14/2020
 
+PREREQ=""
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+
 mkdir -p /run/cryptsetup
 echo "Initializing... Please wait a few seconds for TPM validation of boot sequence."
 echo "Measuring boot system integrity..."

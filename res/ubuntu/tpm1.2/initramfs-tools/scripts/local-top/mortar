@@ -3,6 +3,19 @@
 # Some inspiration from https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/tpm-script and https://github.com/morbitzer/linux-luks-tpm-boot/blob/master/getsecret.sh
 
 
+PREREQ=""
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
 # Get the TPM working.
 chown tss:tss /dev/tpm0
 chmod 600 /dev/tpm0
