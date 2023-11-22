@@ -15,7 +15,7 @@ if [ -d tmpramfs ]; then
 	rm -rf tmpramfs
 fi
 
-#Create tpmramfs for generated mortar key and read user luks password to file.
+#Create tmpramfs for generated mortar key and read user luks password to file.
 if mkdir tmpramfs && mount tmpfs -t tmpfs -o size=1M,noexec,nosuid tmpramfs; then
 	echo "Created tmpramfs for storing the key."
 	trap "if [ -f tmpramfs/user.key ]; then rm -f tmpramfs/user.key; fi" EXIT
