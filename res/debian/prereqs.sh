@@ -2,6 +2,7 @@ apt-get update
 apt-get install \
         binutils \
         efitools \
+        systemd-boot-efi \
         uuid-runtime
 
 echo "Installed Debian dependencies."
