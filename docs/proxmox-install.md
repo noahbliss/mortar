@@ -1,5 +1,8 @@
 # Full Disk Encryption and Boot Stack Protection - Mortar + Proxmox
 
+## Warning:  
+New versions of Proxmox, specifically the kernel over 5.15 have an issue which breaks compatibility with Mortar. You can use the vanilla Debian kernel instead, however, you will need to ensure it remains the default through upgrades. You may also experience loss of functionality vs. the Proxmox kernel. We have reported this issue on the Proxmox Forums and unfortunately have not gotten any traction.  
+
 ## Prerequisites:
  - TPM Module (2.0 preferred, 1.2 also supported)
  - Secureboot-capable host
