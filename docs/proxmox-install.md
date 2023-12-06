@@ -1,7 +1,7 @@
 # Full Disk Encryption and Boot Stack Protection - Mortar + Proxmox
 
 ## Warning:  
-New versions of Proxmox, specifically the kernel over 5.15 have an issue which breaks compatibility with Mortar. You can use the vanilla Debian kernel instead, however, you will need to ensure it remains the default through upgrades. You may also experience loss of functionality vs. the Proxmox kernel. We have reported this issue on the Proxmox Forums and unfortunately have not gotten any traction.  
+Some versions of the Proxmox kernel have a signing issue which makes them incompatible with Mortar. The impacted kernel versions start with 5.15.83-1-pve and stretch up to and include 6.2.16-7-pve. Do not use these kernel version with Mortar. As of the time of writing, the latest PVE kernel is 6.5 and does work. More details about this issue can be found on the Proxmox Wiki page [here](https://pve.proxmox.com/wiki/Secure_Boot_Setup).
 
 ## Prerequisites:
  - TPM Module (2.0 preferred, 1.2 also supported)
