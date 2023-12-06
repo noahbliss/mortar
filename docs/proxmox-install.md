@@ -318,6 +318,6 @@ At this point you should be ready to go! After gocryptfs mounts, any data placed
 **NOTE: Any data placed on the disk OUTSIDE of that specific path will NOT be encrypted.**
 
 ## Step 7. Convert Debian to Proxmox.  
-https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_Stretch
+https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_12_Bookworm
 
 ## Step 8. Configure data disk with Proxmox.  
