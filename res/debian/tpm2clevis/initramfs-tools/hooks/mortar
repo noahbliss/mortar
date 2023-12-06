@@ -78,9 +78,13 @@ if [ -x /usr/bin/clevis-decrypt-tpm2 ]; then
     copy_exec "${tpm2_load_bin}" /bin || die 1 "Unable to copy ${tpm2_load_bin}"
     # Future-proof ourselves if tpm2-tools gets upgraded to 4. 
     tpm2_pcrget_bin=$(command -v tpm2_pcrlist)
-    if [ -z "$tpm2_pcrget_bin" ]; then tpm2_pcrget_bin=$(command -v tpm2_pcrread); fi
+    if [ -z "$tpm2_pcrget_bin" ]; then 
+	    tpm2_pcrget_bin=$(command -v tpm2_pcrread)
+	    tpm2_flushcontext_bin=$(command -v tpm2_flushcontext)
+    fi
     if [ -z $tpm2_pcrget_bin ]; then die 1 "Unable to find a tpm2 bin to read pcrs."; fi
     copy_exec "${tpm2_pcrget_bin}" /bin || die 1 "Unable to copy ${tpm2_pcrget_bin}"
+    if [ -f "$tpm2_flushcontext_bin" ]; then copy_exec "${tpm2_flushcontext_bin}" /bin; fi
     for _LIBRARY in /usr/lib/x86_64-linux-gnu/libtss2-tcti-device.so*; do
         if [ -e "${_LIBRARY}" ]; then
             copy_exec "${_LIBRARY}" || die 2 "Unable to copy ${_LIBRARY}"
