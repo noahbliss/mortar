@@ -10,6 +10,7 @@ build() {
     add_module "tpm"
     add_binary "tpm2_unseal"
     add_binary "tpm2_load"
+    add_binary "tpm2_flushcontext"
     #add_binary "clevis-decrypt-http"
     add_binary "clevis-decrypt-tang"
     add_binary "clevis-decrypt-sss"
