@@ -26,50 +26,66 @@ mkdir -p /run/cryptsetup
 
 echo "Initializing... Please wait a few seconds for TPM validation of boot sequence."
 echo "Measuring boot system integrity..."
-CRYPTDEV= #LUKS Partition /dev/sda3
-CRYPTNAME= #Unlocked name (find in crypttab)
+CRYPTPAIRS= #name(s) of the unlocked device(s) (first row in crypttab)
 SLOT= #Keyslot number in use by mortar.
 TPMINDEX=
 HEADERSHA256=
 HEADERFILE=
 
-# Test if the disk is already unlocked.
-if [ -e /dev/mapper/"$CRYPTNAME" ]; then exit; fi
-if ! [ -e "$CRYPTDEV" ]; then echo "Cannot find the crypto block device at $CRYPTDEV"; exit 1; fi
-sleep 2
-if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
-if cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"; then
+for CRYPTPAIR in $CRYPTPAIRS; do 
+  CRYPTNAME=${CRYPTPAIR%:*}
+  CRYPTDEV=${CRYPTPAIR#*:}
+  if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
+  if cryptsetup luksHeaderBackup "$CRYPTDEV" --header-backup-file "$HEADERFILE"; then
     HEADERSHA256CUR=`sha256sum "$HEADERFILE" | cut -f1 -d' '`
-    if [ "$HEADERSHA256" == "$HEADERSHA256CUR" ]; then
-        echo "HEADER VALIDATION SUCCEEDED."
+    if test "${HEADERSHA256#*$HEADERSHA256CUR}" != "$HEADERSHA256"; then
+      echo "HEADER VALIDATION SUCCEEDED FOR $CRYPTNAME."
     else
-        echo "HEADER VALIDATION FAILED."
-	echo "WAITING 10 SECONDS BEFORE CONTINUING."
-	echo "KILL SYSTEM NOW IF YOU DO NOT TRUST THIS HEADER."
-	sleep 7
-	echo "3..."
-	sleep 1
-	echo "2..."
-	sleep 1
-	echo "1..."
-	sleep 1
+      echo "HEADER VALIDATION FAILED FOR $CRYPTNAME."
+      echo "WAITING 10 SECONDS BEFORE CONTINUING."
+      echo "KILL SYSTEM NOW IF YOU DO NOT TRUST THIS HEADER."
+      sleep 7
+      echo "3..."
+      sleep 1
+      echo "2..."
+      sleep 1
+      echo "1..."
+      sleep 1
     fi
     sleep 2
-fi
+  fi
+  if [ -f "$HEADERFILE" ]; then rm "$HEADERFILE"; fi
+done
 
 # Get Mortar key.
-tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null
+if tpm_nvread -i "$TPMINDEX" -f /tmp/mortar.key >/dev/null; then
+  echo -e "TPM VALIDATION SUCCEEDED.\n\n"
+else
+  echo -e "TPM VALIDATION FAILED.\n\n"
+  sleep 3
+fi
+
 # Disable future key fetches.
 tcsd && sleep 1
 tpm_nvread -i "$TPMINDEX" -s 0 >> /dev/null
 
-# Decrypt disk.
-if cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key; then
-    echo -e "TPM VALIDATION SUCCEEDED.\n\nI found $CRYPTNAME."
-    rm /tmp/mortar.key
-    if [ -f /tmp/mortar.key ]; then echo "FAILED TO REMOVE KEYFILE!"; fi
-    sleep 2
-else
-    echo "TPM VALIDATION FAILED."
+# Decrypt disk(s).
+for CRYPTPAIR in $CRYPTPAIRS; do 
+  CRYPTNAME=${CRYPTPAIR%:*}
+  CRYPTDEV=${CRYPTPAIR#*:}
+  # Test if the disk is already unlocked.
+  if [ -e /dev/mapper/"$CRYPTNAME" ]; then
+    echo "skipping $CTYPTNAME as it already exists"
     sleep 3
-fi
+  else
+    if cryptsetup luksOpen $CRYPTDEV $CRYPTNAME --key-file /tmp/mortar.key; then
+      echo "opened $CRYPTNAME"
+    else
+      echo "could't open $CRYPTNAME"
+      sleep 3
+    fi
+  fi
+done
+sleep 2
+rm /tmp/mortar.key
+if [ -f /tmp/mortar.key ]; then echo "FAILED TO REMOVE KEYFILE!"; fi
