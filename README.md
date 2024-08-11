@@ -142,7 +142,58 @@ nano /etc/fstab # Remove /boot from /etc/fstab
 mount -a # remount your EFI partition if it was inside /boot
 mortar-compilesigninstall # (Optional) Make sure mortar can still find your kernel and initramfs
 ```
+
+## Register additional luks devices
+> **_INFO:_**  Currently only available and tested with debian/ proxmox and TPM2. Feel free to create a PR for other versions as well. The implementation can be applied easily to other versions as well.
+
+The concept of adding multiple devices is to add another `mortar*.env` file in `/etc/mortar/` per disk. For each mortar file we create a `mortar*` script in the `local-top` of initramfs. Disks get decrypted one by one and mortar supports different passwords per disk. This way the feature is fully compatible to previous versions using one device.
+
+You can manually create another `mortar*.env` or you can use the convenience script to add a new (already encrypted) disk (it will add your device to `/etc/crypttab` and `/etc/fstab` as well).
+
+<details>
+  <summary>Steps to register an additional device</summary>
  
+ - Encrypt your device with LUKS
+ - Run the register script. `./4-register-additional-luks-device.sh <device> <name>` (creates new `.env` based on values in existing `mortar.env`) or create another `/etc/mortar/mortar*.env` manually
+
+```bash 
+./4-register-additional-luks-device.sh /dev/sda1 sda1_crypt
+```
+
+It will create a file like this `/etc/mortar/mortar-sda1_crypt.env`
+```bash
+# Environment variables for sda1_crypt
+CRYPTDEV="/dev/disk/by-uuid/<the-uuid>"
+CRYPTNAME="sda1_crypt"
+SLOT=1
+TOKENID=0
+TPMHASHTYPE="sha384"
+BINDPCR="7"
+HEADERFILE="./sda1_crypt.header"
+LUKSVER=2
+HEADERSHA256=<the-header>
+```
+(I replaced generated values with `<the-uuid>` and `<the-header>`)
+
+ - Rerun `./3-` and regenerate EFI.
+ - Reboot.
+
+You can check if the files were created correctly for initramfs
+```bash
+# lsinitramfs /boot/initrd.img-6.8.8-4-pve | grep mortar
+scripts/local-top/mortar
+scripts/local-top/mortar-sda1_crypt
+scripts/local-top/mortar-sdb1_crypt
+```
+
+If you want to check the initramfs scripts for debugging:
+```bash
+mkdir -p /tmp/initrd && cd /tmp/initrd
+unmkinitramfs /boot/initrd.img-6.8.8-4-pve .
+cat ./main/scripts/local-top/mortar-sda1_crypt
+```
+
+</details>
 
 ## TODO:  
  - Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
