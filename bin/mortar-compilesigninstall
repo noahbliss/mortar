@@ -89,8 +89,10 @@ if [ "$INSTALLENTRY" == "true" ]; then
 	notailslash=$(echo "$EFI_ROOT" | sed 's/\/$//')
 	EFI_DISK=$(mount | grep "$notailslash" | cut -f1 -d' ')
 	mutilatedpath=$(printf "%s" '\'"$EFI_DIR" "$EFI_NAME" | sed 's/\//\\/g')
+	nodev="${EFI_DISK#/dev/}"
+	partno="$(cat /sys/class/block/$nodev/partition)"
 	echo "Attempting to install new efi file into UEFI boot menu..."
-	if (efibootmgr -c -d "$EFI_DISK" -l "$mutilatedpath" -L "$PRETTY_NAME"); then echo "Added boot entry."; else echo "Error adding boot entry."; fi
+	if (efibootmgr -c -d "$EFI_DISK" -p "$partno" -l "$mutilatedpath" -L "$PRETTY_NAME"); then echo "Added boot entry."; else echo "Error adding boot entry."; fi
 fi
 
 
