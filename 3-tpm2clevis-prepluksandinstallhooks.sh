@@ -47,7 +47,7 @@ for MORTAR_FILE in "${MORTAR_FILES[@]}"; do
     fi
 
     # if luks2
-    if [ "$LUKSVER" == "2" ]; then
+    if [ "$LUKSVER" == "2" ] && [ ! -z "$TOKENID" ]; then
         echo "Wiping any clevis token from LUKS header."
         cryptsetup token remove --token-id "$TOKENID" "$CRYPTDEV"
     fi
