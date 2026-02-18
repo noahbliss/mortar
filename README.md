@@ -148,7 +148,7 @@ mortar-compilesigninstall # (Optional) Make sure mortar can still find your kern
 
 The concept of adding multiple devices is to add another `mortar*.env` file in `/etc/mortar/` per disk. For each mortar file we create a `mortar*` script in the `local-top` of initramfs. Disks get decrypted one by one and mortar supports different passwords per disk. This way the feature is fully compatible to previous versions using one device.
 
-You can manually create another `mortar*.env` or you can use the convenience script to add a new (already encrypted) disk (it will add your device to `/etc/crypttab` and `/etc/fstab` as well).
+You can manually create another `mortar*.env` or you can use the convenience script to add a new (already encrypted) disk.
 
 <details>
   <summary>Steps to register an additional device</summary>
@@ -175,6 +175,7 @@ HEADERSHA256=<the-header>
 ```
 (I replaced generated values with `<the-uuid>` and `<the-header>`)
 
+ - Optionally, set up crypttab, fstab, and mount the device using `./5-setup-luks-device-mount.sh` (see below).
  - Rerun `./3-` and regenerate EFI.
  - Reboot.
 
@@ -194,6 +195,30 @@ cat ./main/scripts/local-top/mortar-sda1_crypt
 ```
 
 </details>
+
+## Set up crypttab, fstab, and mount for an additional LUKS device
+> **_INFO:_**  This is optional. Use this convenience script if you want the registered LUKS device added to `/etc/crypttab` and `/etc/fstab` and mounted immediately. You can also configure these manually if you prefer.
+
+```bash
+./5-setup-luks-device-mount.sh <device> <name> [mountpoint] [fstype]
+```
+
+| Argument   | Required | Default          | Description                          |
+|------------|----------|------------------|--------------------------------------|
+| device     | Yes      |                  | Block device path (e.g. `/dev/sda1`) |
+| name       | Yes      |                  | LUKS mapping name (e.g. `sda1_crypt`)|
+| mountpoint | No       | `/mnt/<name>`    | Where to mount the device            |
+| fstype     | No       | `ext4`           | Filesystem type                      |
+
+Example:
+```bash
+./5-setup-luks-device-mount.sh /dev/sda1 sda1_crypt /data ext4
+```
+
+This will:
+ - Add the device to `/etc/crypttab` (if not already present)
+ - Add a mount entry to `/etc/fstab`
+ - Open the LUKS device and mount it
 
 ## TODO:  
  - Add functionality that stores an OTP private key in the TPM instead of a LUKS key. This would allow an end user to leverage a TPM for boot integrity checking without having to trust it to securely store keys.  
