@@ -6,9 +6,7 @@ NEW_CRYPTDEV=$1
 NEW_CRYPTNAME=$2
 MORTAR_DIR="/etc/mortar"
 MORTAR_FILE="$MORTAR_DIR/mortar-$NEW_CRYPTNAME.env"
-FSTAB_FILE="/etc/fstab"
 INITIAL_MORTAR_FILE="$MORTAR_DIR/mortar.env"
-MOUNT_POINT="/mnt/$NEW_CRYPTNAME"
 
 # Check if the device and name are provided
 if [ -z "$NEW_CRYPTDEV" ] || [ -z "$NEW_CRYPTNAME" ]; then
