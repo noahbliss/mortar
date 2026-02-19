@@ -9,6 +9,8 @@ od --address-radix=n --format=u1 /sys/firmware/efi/efivars/SecureBoot-*
 read -p  "ENTER to continue only if the last number is a \"1\" and you are sure the TPM registers are as you want them." asdf
 
 for MORTAR_FILE in "${MORTAR_FILES[@]}"; do
+    # Clear variables from any previous iteration to prevent leakage.
+    unset CRYPTDEV CRYPTNAME LUKSVER SLOT SLOTUUID TOKENID TPMHASHTYPE BINDPCR HEADERFILE HEADERSHA256
     echo "Processing MORTAR_FILE: $MORTAR_FILE"
     source "$MORTAR_FILE"
 
@@ -47,7 +49,7 @@ for MORTAR_FILE in "${MORTAR_FILES[@]}"; do
     fi
 
     # if luks2
-    if [ "$LUKSVER" == "2" ] && [ ! -z "$TOKENID" ]; then
+    if [ "$LUKSVER" == "2" ] && [ -n "$TOKENID" ]; then
         echo "Wiping any clevis token from LUKS header."
         cryptsetup token remove --token-id "$TOKENID" "$CRYPTDEV"
     fi

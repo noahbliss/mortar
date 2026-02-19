@@ -12,10 +12,12 @@ MORTAR_FILES=("$MORTAR_DIR"/mortar*.env)
 INITRAMFS_DIR="/etc/initramfs-tools/scripts/local-top"
 INITIAL_MORTAR_FILE="$INITRAMFS_DIR/mortar"
 
-# Remove all previous existing files in /etc/initramfs-tools/scripts/local-top/ except the initial mortar file
-find "$INITRAMFS_DIR" -type f ! -name "mortar" -exec rm -f {} +
+# Remove previous mortar-* scripts (additional device scripts) from local-top, leaving all other files intact.
+find "$INITRAMFS_DIR" -maxdepth 1 -type f -name 'mortar-*' -exec rm -f {} +
 
 for MORTAR_FILE in "${MORTAR_FILES[@]}"; do
+    # Clear variables from any previous iteration to prevent leakage.
+    unset CRYPTDEV CRYPTNAME SLOTUUID SLOT HEADERSHA256 HEADERFILE TOKENID LUKSVER
     echo "Installing with MORTAR_FILE: $MORTAR_FILE"
     source "$MORTAR_FILE"
 
